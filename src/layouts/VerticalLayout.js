@@ -1,7 +1,6 @@
 // ** Core Layout Import
 // !Do not remove the Layout import
-import Layout from '@layouts/VerticalLayout'
-import Footer from '../components/footer'
+import Layout from './CustomLayOut'
 // ** Menu Items Array
 import navigation from '@src/navigation/vertical'
 
@@ -12,9 +11,14 @@ const VerticalLayout = props => {
   // useEffect(() => {
   //   axios.get(URL).then(response => setMenuData(response.data))
   // }, [])
+ 
 
   return (
-    <Layout menuData={navigation} footer={<Footer />} {...props}>
+    <Layout 
+      
+    menuData={navigation}
+    
+   {...props} >
       {props.children}
     </Layout>
   )
