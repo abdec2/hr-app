@@ -1,4 +1,4 @@
-import { Mail, Home, User } from 'react-feather'
+import { Home, Users, CreditCard, Clock, Shield, FilePlus, FileText, Layers } from 'react-feather'
 
 export default [
   {
@@ -14,31 +14,35 @@ export default [
   {
     id: 'view_employees', 
     title: 'Employees', 
-    navLink: '/employees/view'
-    
+    navLink: '/employees/view',
+    icon: <Users size={20} />
   }, 
   {
     id: 'employees_visa', 
     title: 'Employee Visa', 
-    navLink: '/employees/visa'
+    navLink: '/employees/visa',
+    icon: <CreditCard size={20} />
     
   }, 
   {
     id: 'working_hours', 
     title: 'Working Hours', 
-    navLink: '/employees/working'
+    navLink: '/employees/working', 
+    icon: <Clock size={20} />
     
   },
   {
     id: 'gosi', 
     title: 'GOSI', 
-    navLink: '/employees/gosi'
+    navLink: '/employees/gosi', 
+    icon: <Shield size={20} />
     
   },
   {
     id: 'request', 
     title: 'Requests', 
-    navLink: '/employees/request'
+    navLink: '/employees/request',
+    icon: <FilePlus size={20} />
     
   },
     
@@ -49,14 +53,14 @@ export default [
   {
     id: 'cr_details',
     title: 'CR Details',
-    icon: <Mail size={20} />,
+    icon: <Layers size={20} />,
     navLink: '/cr-details'
     
   },
   {
     id: 'rulesPolicy',
     title: 'Rules & Policy',
-    icon: <Mail size={20} />,
+    icon: <FileText size={20} />,
     navLink: '/rules'
     
   }

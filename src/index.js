@@ -32,11 +32,15 @@ import './@core/assets/fonts/feather/iconfont.css'
 import './@core/scss/core.scss'
 import './assets/scss/style.scss'
 
+import MirageServer from './@db'
+
 // ** Service Worker
 import * as serviceWorker from './serviceWorker'
 
 // ** Lazy load app
 const LazyApp = lazy(() => import('./App'))
+
+MirageServer()
 
 ReactDOM.render(
   <Provider store={store}>
