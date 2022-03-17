@@ -35,7 +35,11 @@ const Routes = [
     meta: {
       authRoute: true
     }
-  }, 
+  },
+  {
+    path: '/employee/view/:id',
+    component: lazy(() => import('../../views/pages/employees/EmployeeView'))
+  },
   {
     path: '/employees/visa',
     component: lazy(() => import('../../views/pages/employees/Visa')),

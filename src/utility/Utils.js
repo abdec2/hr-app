@@ -77,3 +77,5 @@ export const selectThemeColors = theme => ({
     neutral30: '#ededed' // for input hover border-color
   }
 })
+
+export const paginateArray = (array, perPage, page) => array.slice((page - 1) * perPage, page * perPage)

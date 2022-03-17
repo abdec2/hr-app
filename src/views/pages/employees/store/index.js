@@ -10,17 +10,17 @@ export const getAllData = createAsyncThunk('employees/getAllData', async () => {
 })
 
 export const getData = createAsyncThunk('employees/getData', async params => {
-  const response = await axios.get('/api/employees/list/data', params)
+  const response = await axios.get('/api/employees/list/data', {params})
   return {
     params,
-    data: response.data.users,
+    data: response.data.employees,
     totalPages: response.data.total
   }
 })
 
-export const getEmployee = createAsyncThunk('employees/getUser', async id => {
-  const response = await axios.get('/api/employees/employee', { id })
-  return response.data.user
+export const getEmployee = createAsyncThunk('employees/getEmployee', async id => {
+  const response = await axios.get('/api/employees/employee', { params: {id}})
+  return response.data
 })
 
 export const addEmployee = createAsyncThunk('employees/addEmployee', async (user, { dispatch, getState }) => {
@@ -31,8 +31,8 @@ export const addEmployee = createAsyncThunk('employees/addEmployee', async (user
 })
 
 export const deleteEmployee = createAsyncThunk('employees/deleteEmployee', async (id, { dispatch, getState }) => {
-  await axios.delete('/api/employees/delete', { id })
-  await dispatch(getData(getState().users.params))
+  await axios.delete('/api/employees/delete', { params: {id} })
+  await dispatch(getData(getState().employees.params))
   await dispatch(getAllData())
   return id
 })
@@ -44,7 +44,7 @@ export const employeeSlice = createSlice({
     total: 1,
     params: {},
     allData: [],
-    selectedUser: null
+    selectedEmployee: null
   },
   reducers: {},
   extraReducers: builder => {
@@ -58,7 +58,7 @@ export const employeeSlice = createSlice({
         state.total = action.payload.totalPages
       })
       .addCase(getEmployee.fulfilled, (state, action) => {
-        state.selectedUser = action.payload
+        state.selectedEmployee = action.payload
       })
   }
 })

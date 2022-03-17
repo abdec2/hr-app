@@ -14,6 +14,8 @@ import { Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2,
 // ** Reactstrap Imports
 import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
 
+import { confirmAlert } from '../../../../components/alert'
+
 // ** Renders Client Columns
 const renderClient = row => {
   const stateNum = Math.floor(Math.random() * 6),
@@ -28,39 +30,39 @@ const renderClient = row => {
 }
 
 // ** Renders Role Columns
-const renderRole = row => {
-  const roleObj = {
-    subscriber: {
-      class: 'text-primary',
-      icon: User
-    },
-    maintainer: {
-      class: 'text-success',
-      icon: Database
-    },
-    editor: {
-      class: 'text-info',
-      icon: Edit2
-    },
-    author: {
-      class: 'text-warning',
-      icon: Settings
-    },
-    admin: {
-      class: 'text-danger',
-      icon: Slack
-    }
-  }
+// const renderRole = row => {
+//   const roleObj = {
+//     subscriber: {
+//       class: 'text-primary',
+//       icon: User
+//     },
+//     maintainer: {
+//       class: 'text-success',
+//       icon: Database
+//     },
+//     editor: {
+//       class: 'text-info',
+//       icon: Edit2
+//     },
+//     author: {
+//       class: 'text-warning',
+//       icon: Settings
+//     },
+//     admin: {
+//       class: 'text-danger',
+//       icon: Slack
+//     }
+//   }
 
-  const Icon = roleObj[row.role] ? roleObj[row.role].icon : Edit2
+//   const Icon = roleObj[row.role] ? roleObj[row.role].icon : Edit2
 
-  return (
-    <span className='text-truncate text-capitalize align-middle'>
-      <Icon size={18} className={`${roleObj[row.role] ? roleObj[row.role].class : ''} me-50`} />
-      {row.role}
-    </span>
-  )
-}
+//   return (
+//     <span className='text-truncate text-capitalize align-middle'>
+//       <Icon size={18} className={`${roleObj[row.role] ? roleObj[row.role].class : ''} me-50`} />
+//       {row.role}
+//     </span>
+//   )
+// }
 
 const statusObj = {
   pending: 'light-warning',
@@ -70,50 +72,50 @@ const statusObj = {
 
 export const columns = [
   {
-    name: 'User',
+    name: 'Employee',
     sortable: true,
     minWidth: '300px',
-    sortField: 'fullName',
+    sortField: 'name',
     selector: row => row.fullName,
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
         {renderClient(row)}
         <div className='d-flex flex-column'>
           <Link
-            to={`/apps/user/view/${row.id}`}
+            to={`/employee/view/${row.id}`}
             className='user_name text-truncate text-body'
             onClick={() => store.dispatch(getEmployee(row.id))}
           >
-            <span className='fw-bolder'>{row.fullName}</span>
+            <span className='fw-bolder'>{row.name}</span>
           </Link>
-          <small className='text-truncate text-muted mb-0'>{row.email}</small>
+          {/* <small className='text-truncate text-muted mb-0'>{row.email}</small> */}
         </div>
       </div>
     )
   },
   {
-    name: 'Role',
+    name: 'CPR No',
     sortable: true,
     minWidth: '172px',
-    sortField: 'role',
-    selector: row => row.role,
-    cell: row => renderRole(row)
+    sortField: 'cpr',
+    selector: row => row.cpr,
+    cell: row => <span className='text-capitalize'>{row.cpr}</span>
   },
   {
-    name: 'Plan',
+    name: 'Phone',
     minWidth: '138px',
     sortable: true,
-    sortField: 'currentPlan',
-    selector: row => row.currentPlan,
-    cell: row => <span className='text-capitalize'>{row.currentPlan}</span>
+    sortField: 'phone',
+    selector: row => row.phone,
+    cell: row => <span className='text-capitalize'>{row.phone}</span>
   },
   {
-    name: 'Billing',
+    name: 'Branch',
     minWidth: '230px',
     sortable: true,
-    sortField: 'billing',
-    selector: row => row.billing,
-    cell: row => <span className='text-capitalize'>{row.billing}</span>
+    sortField: 'branch',
+    selector: row => row.branch,
+    cell: row => <span className='text-capitalize'>{row.branch}</span>
   },
   {
     name: 'Status',
@@ -140,15 +142,11 @@ export const columns = [
             <DropdownItem
               tag={Link}
               className='w-100'
-              to={`/apps/user/view/${row.id}`}
-              // onClick={() => store.dispatch(getUser(row.id))}
+              to={`/employee/view/${row.id}`}
+              onClick={() => store.dispatch(getEmployee(row.id))}
             >
               <FileText size={14} className='me-50' />
               <span className='align-middle'>Details</span>
-            </DropdownItem>
-            <DropdownItem tag='a' href='/' className='w-100' onClick={e => e.preventDefault()}>
-              <Archive size={14} className='me-50' />
-              <span className='align-middle'>Edit</span>
             </DropdownItem>
             <DropdownItem
               tag='a'
@@ -156,7 +154,11 @@ export const columns = [
               className='w-100'
               onClick={e => {
                 e.preventDefault()
-                store.dispatch(deleteEmployee(row.id))
+                confirmAlert().then(result => {
+                  if (result.value) {
+                    store.dispatch(deleteEmployee(row.id))
+                  }
+                })
               }}
             >
               <Trash2 size={14} className='me-50' />

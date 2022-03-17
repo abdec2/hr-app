@@ -131,25 +131,9 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
                 <span className='align-middle'>Export</span>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem className='w-100'>
-                  <Printer className='font-small-4 me-50' />
-                  <span className='align-middle'>Print</span>
-                </DropdownItem>
                 <DropdownItem className='w-100' onClick={() => downloadCSV(store.data)}>
                   <FileText className='font-small-4 me-50' />
                   <span className='align-middle'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Grid className='font-small-4 me-50' />
-                  <span className='align-middle'>Excel</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <File className='font-small-4 me-50' />
-                  <span className='align-middle'>PDF</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Copy className='font-small-4 me-50' />
-                  <span className='align-middle'>Copy</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
@@ -178,8 +162,8 @@ const UsersList = () => {
   const [sortColumn, setSortColumn] = useState('id')
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [currentRole, setCurrentRole] = useState({ value: '', label: 'Select Role' })
-  const [currentPlan, setCurrentPlan] = useState({ value: '', label: 'Select Plan' })
+  const [currentBranch, setCurrentBranch] = useState({ value: '', label: 'Select Branch' })
+  const [nationality, setNationality] = useState({ value: '', label: 'Select Nationality' })
   const [currentStatus, setCurrentStatus] = useState({ value: '', label: 'Select Status', number: 0 })
 
   // ** Function to toggle sidebar
@@ -195,37 +179,33 @@ const UsersList = () => {
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
+        status: currentStatus.value, 
+        branch: currentBranch.value, 
+        nationality: nationality.value
       })
     )
-    console.log(store)
-  }, [dispatch, store?.data.length, sort, sortColumn, currentPage]) //dispatch, store.data.length, sort, sortColumn, currentPage
+  }, [dispatch, store.data.length, sort, sortColumn, currentPage]) //dispatch, store.data.length, sort, sortColumn, currentPage
 
   // ** User filter options
-  const roleOptions = [
-    { value: '', label: 'Select Role' },
-    { value: 'admin', label: 'Admin' },
-    { value: 'author', label: 'Author' },
-    { value: 'editor', label: 'Editor' },
-    { value: 'maintainer', label: 'Maintainer' },
-    { value: 'subscriber', label: 'Subscriber' }
+  const branchOptions = [
+    { value: '', label: 'Select branch' },
+    { value: 'seef', label: 'Seef' },
+    { value: 'tubli', label: 'Tubli' },
+    { value: 'riffa', label: 'Riffa' },
+    { value: 'juffair', label: 'Juffair' },
+    { value: 'muharraq', label: 'Muharraq' }
   ]
 
-  const planOptions = [
-    { value: '', label: 'Select Plan' },
-    { value: 'basic', label: 'Basic' },
-    { value: 'company', label: 'Company' },
-    { value: 'enterprise', label: 'Enterprise' },
-    { value: 'team', label: 'Team' }
+  const expatOptions = [
+    { value: '', label: 'Select Nationality' },
+    { value: false, label: 'Bahraini' },
+    { value: true, label: 'Non Bahraini' }
   ]
 
   const statusOptions = [
     { value: '', label: 'Select Status', number: 0 },
-    { value: 'pending', label: 'Pending', number: 1 },
-    { value: 'active', label: 'Active', number: 2 },
-    { value: 'inactive', label: 'Inactive', number: 3 }
+    { value: 'active', label: 'Active', number: 1 },
+    { value: 'inactive', label: 'Inactive', number: 2 }
   ]
 
   // ** Function in get data on page change
@@ -237,9 +217,9 @@ const UsersList = () => {
         q: searchTerm,
         perPage: rowsPerPage,
         page: page.selected + 1,
-        role: currentRole.value,
+        branch: currentBranch.value,
         status: currentStatus.value,
-        currentPlan: currentPlan.value
+        nationality: nationality.value
       })
     )
     setCurrentPage(page.selected + 1)
@@ -255,8 +235,8 @@ const UsersList = () => {
         q: searchTerm,
         perPage: value,
         page: currentPage,
-        role: currentRole.value,
-        currentPlan: currentPlan.value,
+        branch: currentBranch.value,
+        nationality: nationality.value,
         status: currentStatus.value
       })
     )
@@ -273,9 +253,9 @@ const UsersList = () => {
         sortColumn,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
+        branch: currentBranch.value,
         status: currentStatus.value,
-        currentPlan: currentPlan.value
+        nationality: nationality.value
       })
     )
   }
@@ -306,8 +286,8 @@ const UsersList = () => {
   // ** Table data to render
   const dataToRender = () => {
     const filters = {
-      role: currentRole.value,
-      currentPlan: currentPlan.value,
+      branch: currentBranch.value,
+      nationality: nationality.value,
       status: currentStatus.value,
       q: searchTerm
     }
@@ -316,12 +296,12 @@ const UsersList = () => {
       return filters[k].length > 0
     })
 
-    if (store?.data.length > 0) {
+    if (store.data.length > 0) {
       return store.data
-    } else if (store?.data.length === 0 && isFiltered) {
+    } else if (store.data.length === 0 && isFiltered) {
       return []
     } else {
-      return store?.allData.slice(0, rowsPerPage)
+      return store.allData.slice(0, rowsPerPage)
     }
   }
 
@@ -335,9 +315,9 @@ const UsersList = () => {
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
+        branch: currentBranch.value,
         status: currentStatus.value,
-        currentPlan: currentPlan.value
+        nationality: nationality.value
       })
     )
   }
@@ -351,42 +331,42 @@ const UsersList = () => {
         <CardBody>
           <Row>
             <Col md='4'>
-              <Label for='role-select'>Role</Label>
+              <Label for='branch-select'>Branch</Label>
               <Select
                 isClearable={false}
-                value={currentRole}
-                options={roleOptions}
+                value={currentBranch}
+                options={branchOptions}
                 className='react-select'
                 classNamePrefix='select'
                 theme={selectThemeColors}
                 onChange={data => {
-                  setCurrentRole(data)
+                  setCurrentBranch(data)
                   dispatch(
                     getData({
                       sort,
                       sortColumn,
                       q: searchTerm,
-                      role: data.value,
+                      branch: data.value,
                       page: currentPage,
                       perPage: rowsPerPage,
                       status: currentStatus.value,
-                      currentPlan: currentPlan.value
+                      nationality: nationality.value
                     })
                   )
                 }}
               />
             </Col>
             <Col className='my-md-0 my-1' md='4'>
-              <Label for='plan-select'>Plan</Label>
+              <Label for='plan-select'>Nationality</Label>
               <Select
                 theme={selectThemeColors}
                 isClearable={false}
                 className='react-select'
                 classNamePrefix='select'
-                options={planOptions}
-                value={currentPlan}
+                options={expatOptions}
+                value={nationality}
                 onChange={data => {
-                  setCurrentPlan(data)
+                  setNationality(data)
                   dispatch(
                     getData({
                       sort,
@@ -394,8 +374,8 @@ const UsersList = () => {
                       q: searchTerm,
                       page: currentPage,
                       perPage: rowsPerPage,
-                      role: currentRole.value,
-                      currentPlan: data.value,
+                      branch: currentBranch.value,
+                      nationality: data.value,
                       status: currentStatus.value
                     })
                   )
@@ -421,8 +401,8 @@ const UsersList = () => {
                       page: currentPage,
                       status: data.value,
                       perPage: rowsPerPage,
-                      role: currentRole.value,
-                      currentPlan: currentPlan.value
+                      currentBranch: currentBranch.value,
+                      nationality: nationality.value
                     })
                   )
                 }}
