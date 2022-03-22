@@ -23,11 +23,11 @@ export const getEmployee = createAsyncThunk('employees/getEmployee', async id =>
   return response.data
 })
 
-export const addEmployee = createAsyncThunk('employees/addEmployee', async (user, { dispatch, getState }) => {
-  await axios.post('/api/employees/add-employee', user)
-  await dispatch(getData(getState().users.params))
+export const addEmployee = createAsyncThunk('employees/addEmployee', async (employee, { dispatch, getState }) => {
+  await axios.post('/api/employees/add-employee', employee)
+  await dispatch(getData(getState().employees.params))
   await dispatch(getAllData())
-  return user
+  return employee
 })
 
 export const deleteEmployee = createAsyncThunk('employees/deleteEmployee', async (id, { dispatch, getState }) => {
@@ -35,6 +35,19 @@ export const deleteEmployee = createAsyncThunk('employees/deleteEmployee', async
   await dispatch(getData(getState().employees.params))
   await dispatch(getAllData())
   return id
+})
+
+export const updateEmployeeStatus = createAsyncThunk('employees/updateEmployeeStatus', async (status,  {dispatch, getState }) => {
+  await axios.put('/api/employees/update-status', status)
+  await dispatch(getEmployee(status.id))
+  // await dispatch(getAllData())
+  return status
+})
+
+export const updateEmployee = createAsyncThunk('employees/update', async (employee, {dispatch, getState}) => {
+  await axios.put('/api/employees/update', employee)
+  await dispatch(getEmployee(employee.id))
+  return employee
 })
 
 export const employeeSlice = createSlice({

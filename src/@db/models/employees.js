@@ -5,7 +5,7 @@ export const data = {
         {
             id: 1,
             name: 'Azim Baig', 
-            dob: '02-12-1987', 
+            dob: '1987-12-02T00:00:00.000Z', 
             cpr: '871241854',
             nationality: 'Pakistan', 
             passport: 'AY3924154',
@@ -22,7 +22,7 @@ export const data = {
         {
             id: 2,
             name: 'Abdulla alsaeed', 
-            dob: '02-06-1996', 
+            dob: '1996-02-06T00:00:00.000Z', 
             cpr: '960641854',
             nationality: 'Bahrain', 
             passport: 'xxxxxxxxx',
@@ -39,7 +39,7 @@ export const data = {
         {
             id: 3,
             name: 'Syed Fadhel', 
-            dob: '02-04-1997', 
+            dob: '1997-03-17T00:00:00.000Z', 
             cpr: '970441854',
             nationality: 'Bahrain', 
             passport: 'xxxxxxxxxxx',
@@ -91,10 +91,41 @@ export const getData = config => {
   }
 
 export const getEmployee = (param) => {
-    return data.employees.find(item => item.id === Number(param.id))
+    return data.employees.find(item => item.id === Number(param.id)) || null
 }
 
 export const delEmployee = (params) => {
     const userIndex = data.employees.findIndex(t => t.id === Number(params.id))
     data.employees.splice(userIndex, 1)
+}
+
+export const addEmployee = (params) => {
+    const newEmployee = JSON.parse(params)
+    const highestValue = data.employees.reduce((a, b) => (a.id > b.id ? a : b)).id
+    newEmployee.id = highestValue + 1
+
+    data.employees.push(newEmployee)
+
+    return newEmployee
+}
+
+export const updateStatus = (params) => {
+    params = JSON.parse(params)
+    const updateEmployee = data.employees.find(item => item.id === params.id)
+    const employeeIndex = data.employees.findIndex(t => t.id === params.id)
+
+    updateEmployee.status = params.status
+
+    data.employees.splice(employeeIndex, 1, updateEmployee)
+
+    return updateEmployee
+}
+
+export const updateEmployee = (params) => {
+    const updateEmployee = JSON.parse(params)
+    const employeeIndex = data.employees.findIndex(t => t.id === params.id)
+    data.employees.splice(employeeIndex, 1, updateEmployee)
+    console.log(data.employees)
+
+    return updateEmployee
 }

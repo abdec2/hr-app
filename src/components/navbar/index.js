@@ -5,7 +5,7 @@ import { Fragment } from 'react'
 import NavbarUser from './NavbarUser'
 
 // ** Third Party Components
-import { Menu } from 'react-feather'
+import { Menu, ChevronLeft } from 'react-feather'
 
 // ** Reactstrap Imports
 import { NavItem, NavLink } from 'reactstrap'
