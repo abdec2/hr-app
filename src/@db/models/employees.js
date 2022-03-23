@@ -76,7 +76,7 @@ export const getData = config => {
     const dataToFilter = sort === 'asc' ? dataAsc : dataAsc.reverse()
     console.log('type', typeof nationality)
     const filteredData = dataToFilter.filter(
-      employee => (employee.name.toLowerCase().includes(queryLowered) || employee.branch.toLowerCase().includes(queryLowered)) && 
+      employee => (employee.name.toLowerCase().includes(queryLowered) || employee.cpr.toLowerCase().includes(queryLowered)) && 
       employee.expatriate === ((nationality === "true") ? true : (nationality === "false") ? false : employee.expatriate) &&
       employee.branch === (branch || employee.branch) &&
       employee.status === (status || employee.status)
@@ -91,11 +91,11 @@ export const getData = config => {
   }
 
 export const getEmployee = (param) => {
-    return data.employees.find(item => item.id === Number(param.id)) || null
+    return data.employees.find(item => item.id === parseInt(param.id)) || null
 }
 
 export const delEmployee = (params) => {
-    const userIndex = data.employees.findIndex(t => t.id === Number(params.id))
+    const userIndex = data.employees.findIndex(t => t.id === parseInt(params.id))
     data.employees.splice(userIndex, 1)
 }
 
@@ -111,8 +111,8 @@ export const addEmployee = (params) => {
 
 export const updateStatus = (params) => {
     params = JSON.parse(params)
-    const updateEmployee = data.employees.find(item => item.id === params.id)
-    const employeeIndex = data.employees.findIndex(t => t.id === params.id)
+    const updateEmployee = data.employees.find(item => item.id === parseInt(params.id))
+    const employeeIndex = data.employees.findIndex(t => t.id === parseInt(params.id))
 
     updateEmployee.status = params.status
 
@@ -123,9 +123,9 @@ export const updateStatus = (params) => {
 
 export const updateEmployee = (params) => {
     const updateEmployee = JSON.parse(params)
-    const employeeIndex = data.employees.findIndex(t => t.id === params.id)
-    data.employees.splice(employeeIndex, 1, updateEmployee)
-    console.log(data.employees)
+    const employeeIndex = data.employees.findIndex(t => t.id === parseInt(updateEmployee.id))
 
+    data.employees.splice(employeeIndex, 1, updateEmployee)
+    console.log(data)
     return updateEmployee
 }

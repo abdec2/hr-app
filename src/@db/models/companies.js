@@ -90,11 +90,11 @@ export const crGetData = config => {
   }
 
 export const getCr = (param) => {
-    return cRData.companies.find(item => item.id === Number(param.id)) || null
+    return cRData.companies.find(item => item.id === parseInt(param.id)) || null
 }
 
 export const deleteCr = (params) => {
-    const userIndex = cRData.companies.findIndex(t => t.id === Number(params.id))
+    const userIndex = cRData.companies.findIndex(t => t.id === parseInt(params.id))
     cRData.companies.splice(userIndex, 1)
 }
 
@@ -110,7 +110,7 @@ export const addCr = (params) => {
 
 export const updateCr = (params) => {
     const updatedCr = JSON.parse(params)
-    const crIndex = cRData.companies.findIndex(t => t.id === Number(updatedCr.id))
+    const crIndex = cRData.companies.findIndex(t => t.id === parseInt(updatedCr.id))
     cRData.companies.splice(crIndex, 1, updatedCr)
 
     return updateCr

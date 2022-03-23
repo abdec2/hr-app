@@ -20,7 +20,7 @@ const EditModal = () => {
     const [status, setStatus] = useState(null)
 
     const checkIsValid = data => {
-        return Object.values(data).map(field => (typeof field === 'object' ? field !== null : typeof field === 'number' ? field !== '' : field.length > 0))
+        return Object.values(data).map(field => (typeof field === 'object' ? field !== null : field.length > 0))
     }
     
       const statusOptions = [

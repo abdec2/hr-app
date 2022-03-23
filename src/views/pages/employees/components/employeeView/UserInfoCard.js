@@ -652,7 +652,7 @@ const UserInfoCard = ({ selectedUser }) => {
                   name='contractSigned'
                   control={control}
                   render={({ field }) => (
-                    <Input type='select' id='contractSigned' name='contractSigned' invalid={errors.contractSigned && true} >
+                    <Input type='select' id='contractSigned' name='contractSigned' invalid={errors.contractSigned && true} {...field}>
                       <option value=''>Select...</option>
                       <option value='true'>True</option>
                       <option value='false'>False</option>
