@@ -381,7 +381,20 @@ const UserInfoCard = ({ selectedUser }) => {
     console.log(data)
     // console.log(checkIsValid(data))
     if (checkIsValid(data)) {
-      dispatch(updateEmployee({id: selectedUser.id, ...data}))
+      dispatch(updateEmployee({
+        id: selectedUser.id,
+        address: data.address,
+        branch: data.branch,
+        contractSigned: data.contractSigned === "true",
+        cpr: data.cpr,
+        dob: data.dob,
+        expatriate: data.expatriate === "true",
+        name: data.name,
+        nationality: data.nationality,
+        passport: data.passport,
+        phone: data.phone,
+        status: data.status
+      }))
       setShow(false)
     } else {
       for (const key in data) {

@@ -50,8 +50,8 @@ export const columns = [
             // to={`/companies/view/${row.id}`}
             className='user_name text-truncate text-body'
             // onClick={() => store.dispatch(getCR(row.id))}
-            onClick={() => {
-              store.dispatch(getCR(row.id))
+            onClick={async () => {
+              await store.dispatch(getCR(row.id))
               store.dispatch(toggleEditModal())
             }}
           >

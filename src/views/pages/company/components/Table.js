@@ -159,8 +159,6 @@ const CrList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
   const store = useSelector(state => state.companies)
-  console.log(store)
-
 
   // ** States
   const [sort, setSort] = useState('desc')
@@ -185,7 +183,7 @@ const CrList = () => {
         perPage: rowsPerPage
       })
     )
-  }, [dispatch, store.data.length, sort, sortColumn, currentPage]) //dispatch, store.data.length, sort, sortColumn, currentPage
+  }, [dispatch, store.data.length, sort, sortColumn, currentPage, store.selectedCr]) //dispatch, store.data.length, sort, sortColumn, currentPage
 
   // ** Function in get data on page change
   const handlePagination = page => {

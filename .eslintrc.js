@@ -29,7 +29,7 @@ module.exports = {
     // Variable
     // 'init-declarations': 'error',
     'no-use-before-define': 'error',
-    'no-unused-vars': 'off', // ['error', { varsIgnorePattern: '^[A-Z]' }]
+    'no-unused-vars': 'off', //['error', { varsIgnorePattern: '^[A-Z]' }]
 
     // Stylistic Issues
     'array-bracket-newline': ['error', { multiline: true, minItems: null }],
