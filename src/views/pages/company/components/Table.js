@@ -16,6 +16,7 @@ import Select from 'react-select'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
+import './../../employees/styles/style.css'
 
 // ** Utils
 import { selectThemeColors } from '@utils'
@@ -56,7 +57,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
 
     const columnDelimiter = ','
     const lineDelimiter = '\n'
-    const keys = Object.keys(store.data[0])
+    const keys = Object.keys(store.data[0].attributes)
 
     result = ''
     result += keys.join(columnDelimiter)
@@ -67,7 +68,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
       keys.forEach(key => {
         if (ctr > 0) result += columnDelimiter
 
-        result += item[key]
+        result += item.attributes[key]
 
         ctr++
       })
@@ -146,7 +147,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
             </UncontrolledDropdown>
 
             <Button className='add-new-user' color='primary' onClick={toggleSidebar}>
-              Add New User
+              Add New CR
             </Button>
           </div>
         </Col>
@@ -159,6 +160,7 @@ const CrList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
   const store = useSelector(state => state.companies)
+  console.log(store)
 
   // ** States
   const [sort, setSort] = useState('desc')

@@ -1,5 +1,5 @@
 {
-  "name": "vuexy-react-admin-dashboard",
+  "name": "arab-vape-hrms",
   "version": "8.0.0",
   "private": true,
   "dependencies": {
@@ -43,6 +43,7 @@
     "postcss-rtl": "^1.5.0",
     "prismjs": "^1.19.0",
     "prop-types": "~15.7.2",
+    "qs": "^6.10.3",
     "rc-input-number": "^7.3.3",
     "react": "^17.0.2",
     "react-apexcharts": "^1.3.9",

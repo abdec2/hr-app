@@ -6,10 +6,10 @@ import Avatar from '@components/avatar'
 
 // ** Store & Actions
 import { store } from '@store/store'
-import { getEmployee, deleteEmployee } from '../../store/index'
+import { getVisa, deleteVisa } from '../../store/index'
 
 // ** Icons Imports
-import { Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2, Archive } from 'react-feather'
+import { Edit2, MoreVertical, Trash2 } from 'react-feather'
 
 // ** Reactstrap Imports
 import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
@@ -25,35 +25,35 @@ const renderClient = row => {
   if (row?.avatar?.length) {
     return <Avatar className='me-1' img={row.avatar} width='32' height='32' />
   } else {
-    return <Avatar color={color || 'primary'} className='me-1' content={row.attributes.name || 'John Doe'} initials />
+    return <Avatar color={color || 'primary'} className='me-1' content={row.attributes.employee.data.attributes.name || 'John Doe'} initials />
   }
 }
 
 
 const statusObj = {
-  pending: 'light-warning',
-  active: 'light-success',
-  inactive: 'light-secondary'
+  applied: 'light-warning',
+  valid: 'light-success',
+  invalid: 'light-secondary'
 }
 
 export const columns = [
   {
     name: 'Employee',
     sortable: true,
-    minWidth: '300px',
-    sortField: 'name',
-    selector: row => row.attributes.name,
+    minWidth: '200px',
+    sortField: 'employee.name',
+    selector: row => row.attributes.employee.data.attributes.name,
     cell: row => (
-      <div className='d-flex justify-content-left align-items-center'>
+      <div role="button" className='d-flex justify-content-left align-items-center'>
         {renderClient(row)}
         <div className='d-flex flex-column'>
-          <Link
-            to={`/employee/view/${row.id}`}
+          <div
+            // to={`/employee/view/${row.id}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getEmployee(row.id))}
+            // onClick={() => store.dispatch(getEmployee(row.id))}
           >
-            <span className='fw-bolder'>{row.attributes.name}</span>
-          </Link>
+            <span className='fw-bolder'>{row.attributes.employee.data.attributes.name}</span>
+          </div>
           {/* <small className='text-truncate text-muted mb-0'>{row.email}</small> */}
         </div>
       </div>
@@ -62,26 +62,42 @@ export const columns = [
   {
     name: 'CPR No',
     sortable: true,
-    minWidth: '172px',
-    sortField: 'cpr',
-    selector: row => row.attributes.cpr,
-    cell: row => <span className='text-capitalize'>{row.attributes.cpr}</span>
+    minWidth: '150px',
+    sortField: 'employee.cpr',
+    selector: row => row.attributes.employee.data.attributes.cpr,
+    cell: row => <span className='text-capitalize'>{row.attributes.employee.data.attributes.cpr}</span>
   },
   {
-    name: 'Phone',
-    minWidth: '138px',
+    name: 'Passport #',
+    minWidth: '150px',
     sortable: true,
-    sortField: 'phone',
-    selector: row => row.attributes.phone,
-    cell: row => <span className='text-capitalize'>{row.attributes.phone}</span>
+    sortField: 'employee.passport',
+    selector: row => row.attributes.employee.data.attributes.passport,
+    cell: row => <span className='text-capitalize'>{row.attributes.employee.data.attributes.passport}</span>
   },
   {
-    name: 'Branch',
+    name: 'RP #',
+    minWidth: '150px',
+    sortable: true,
+    sortField: 'rp_no',
+    selector: row => row.attributes.rp_no,
+    cell: row => <span className='text-capitalize'>{row.attributes.rp_no}</span>
+  },
+  {
+    name: 'RP Issue Date',
     minWidth: '230px',
     sortable: true,
-    sortField: 'cr.id',
-    selector: row => row.attributes.cr.data.id,
-    cell: row => <span className='text-capitalize'>{row.attributes.cr.data.attributes.location}</span>
+    sortField: 'rp_issue',
+    selector: row => row.attributes.rp_issue,
+    cell: row => <span className='text-capitalize'>{row.attributes.rp_issue}</span>
+  },
+  {
+    name: 'RP Expiry Date',
+    minWidth: '230px',
+    sortable: true,
+    sortField: 'rp_expiry',
+    selector: row => row.attributes.rp_expiry,
+    cell: row => <span className='text-capitalize'>{row.attributes.rp_expiry}</span>
   },
   {
     name: 'Status',
@@ -106,23 +122,19 @@ export const columns = [
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem
-              tag={Link}
               className='w-100'
-              to={`/employee/view/${row.id}`}
-              onClick={() => store.dispatch(getEmployee(row.id))}
+              onClick={() => store.dispatch(getVisa(row.id))}
             >
-              <FileText size={14} className='me-50' />
-              <span className='align-middle'>Details</span>
+              <Edit2 size={14} className='me-50' />
+              <span className='align-middle'>Edit</span>
             </DropdownItem>
             <DropdownItem
-              tag='a'
-              href='/'
               className='w-100'
               onClick={e => {
                 e.preventDefault()
                 confirmAlert().then(result => {
                   if (result.value) {
-                    store.dispatch(deleteEmployee(row.id))
+                    store.dispatch(deleteVisa(row.id))
                   }
                 })
               }}

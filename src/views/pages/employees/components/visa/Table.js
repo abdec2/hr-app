@@ -8,8 +8,7 @@ import Sidebar from './Sidebar'
 import { columns } from './columns'
 
 // ** Store & Actions
-import { getAllData, getData } from './../../store'
-import { getAllData as allBranches } from './../../../company/store'
+import { getAllVisas, getVisaData } from './../../store'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Third Party Components
@@ -51,7 +50,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
 
     const columnDelimiter = ','
     const lineDelimiter = '\n'
-    const keys = Object.keys(store.data[0])
+    const keys = Object.keys(store.visaData[0].attributes)
 
     result = ''
     result += keys.join(columnDelimiter)
@@ -62,7 +61,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
       keys.forEach(key => {
         if (ctr > 0) result += columnDelimiter
 
-        result += item[key]
+        result += item.attributes[key]
 
         ctr++
       })
@@ -133,7 +132,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
                 <span className='align-middle'>Export</span>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem className='w-100' onClick={() => downloadCSV(store.data)}>
+                <DropdownItem className='w-100' onClick={() => downloadCSV(store.visaData)}>
                   <FileText className='font-small-4 me-50' />
                   <span className='align-middle'>CSV</span>
                 </DropdownItem>
@@ -141,7 +140,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
             </UncontrolledDropdown>
 
             <Button className='add-new-user' color='primary' onClick={toggleSidebar}>
-              Add New Employee
+              Add New Visa
             </Button>
           </div>
         </Col>
@@ -154,8 +153,6 @@ const UsersList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
   const store = useSelector(state => state.employees)
-  const branches = useSelector(state => state.companies)
-  console.log(branches)
   console.log(store)
   
   // ** States
@@ -165,62 +162,42 @@ const UsersList = () => {
   const [sortColumn, setSortColumn] = useState('id')
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [currentBranch, setCurrentBranch] = useState({ value: '', label: 'Select Branch' })
-  const [nationality, setNationality] = useState({ value: '', label: 'Select Nationality' })
-  const [currentStatus, setCurrentStatus] = useState({ value: '', label: 'Select Status', number: 0 })
 
   // ** Function to toggle sidebar
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
 
   // ** Get data on mount
   useEffect(() => {
-    dispatch(getAllData())
+    dispatch(getAllVisas())
     dispatch(
-      getData({
+      getVisaData({
         sort,
         sortColumn,
         q: searchTerm,
         page: currentPage,
-        perPage: rowsPerPage,
-        status: currentStatus.value, 
-        branch: currentBranch.value, 
-        nationality: nationality.value
+        perPage: rowsPerPage
       })
     )
-    dispatch(allBranches())
-  }, [dispatch, store.data.length, sort, sortColumn, currentPage]) //dispatch, store.data.length, sort, sortColumn, currentPage
+  }, [dispatch, store.visaData.length, sort, sortColumn, currentPage])
 
   // ** User filter options
-  const branchOptions = [{ value: '', label: 'Select Branch' }]
-
-  branches.allData.map(item => {
-    branchOptions.push({value:item.id.toString(), label: item.attributes.location})
-  })
-
-  const expatOptions = [
-    { value: '', label: 'Select Nationality' },
-    { value: "false", label: 'Bahraini' },
-    { value: "true", label: 'Non Bahraini' }
-  ]
 
   const statusOptions = [
     { value: '', label: 'Select Status', number: 0 },
-    { value: 'active', label: 'Active', number: 1 },
-    { value: 'inactive', label: 'Inactive', number: 2 }
+    { value: 'applied', label: 'Applied', number: 1 },
+    { value: 'valid', label: 'Valid', number: 2 },
+    { value: 'invalid', label: 'Invalid', number: 2 }
   ]
 
   // ** Function in get data on page change
   const handlePagination = page => {
     dispatch(
-      getData({
+      getVisaData({
         sort,
         sortColumn,
         q: searchTerm,
         perPage: rowsPerPage,
-        page: page.selected + 1,
-        branch: currentBranch.value,
-        status: currentStatus.value,
-        nationality: nationality.value
+        page: page.selected + 1
       })
     )
     setCurrentPage(page.selected + 1)
@@ -230,15 +207,12 @@ const UsersList = () => {
   const handlePerPage = e => {
     const value = parseInt(e.currentTarget.value)
     dispatch(
-      getData({
+      getVisaData({
         sort,
         sortColumn,
         q: searchTerm,
         perPage: value,
-        page: currentPage,
-        branch: currentBranch.value,
-        nationality: nationality.value,
-        status: currentStatus.value
+        page: currentPage
       })
     )
     setRowsPerPage(value)
@@ -248,22 +222,19 @@ const UsersList = () => {
   const handleFilter = val => {
     setSearchTerm(val)
     dispatch(
-      getData({
+      getVisaData({
         sort,
         q: val,
         sortColumn,
         page: currentPage,
-        perPage: rowsPerPage,
-        branch: currentBranch.value,
-        status: currentStatus.value,
-        nationality: nationality.value
+        perPage: rowsPerPage
       })
     )
   }
 
   // ** Custom Pagination
   const CustomPagination = () => {
-    const count = Number(Math.ceil(store.total / rowsPerPage))
+    const count = Number(Math.ceil(store.visaTotal / rowsPerPage))
 
     return (
       <ReactPaginate
@@ -287,9 +258,6 @@ const UsersList = () => {
   // ** Table data to render
   const dataToRender = () => {
     const filters = {
-      branch: currentBranch.value,
-      nationality: nationality.value,
-      status: currentStatus.value,
       q: searchTerm
     }
 
@@ -297,12 +265,12 @@ const UsersList = () => {
       return filters[k].length > 0
     })
 
-    if (store.data.length > 0) {
-      return store.data
-    } else if (store.data.length === 0 && isFiltered) {
+    if (store.visaData.length > 0) {
+      return store.visaData
+    } else if (store.visaData.length === 0 && isFiltered) {
       return []
     } else {
-      return store.allData.slice(0, rowsPerPage)
+      return store.allVisas.slice(0, rowsPerPage)
     }
   }
 
@@ -310,111 +278,21 @@ const UsersList = () => {
     setSort(sortDirection)
     setSortColumn(column.sortField)
     dispatch(
-      getData({
+      getVisaData({
         sort,
         sortColumn,
         q: searchTerm,
         page: currentPage,
-        perPage: rowsPerPage,
-        branch: currentBranch.value,
-        status: currentStatus.value,
-        nationality: nationality.value
+        perPage: rowsPerPage
       })
     )
   }
 
   return (
     <Fragment>
-      <Card>
-        <CardHeader>
-          <CardTitle tag='h4'>Filters</CardTitle>
-        </CardHeader>
-        <CardBody>
-          <Row>
-            <Col md='4'>
-              <Label for='branch-select'>Branch</Label>
-              <Select
-                isClearable={false}
-                value={currentBranch}
-                options={branchOptions}
-                className='react-select'
-                classNamePrefix='select'
-                theme={selectThemeColors}
-                onChange={data => {
-                  setCurrentBranch(data)
-                  dispatch(
-                    getData({
-                      sort,
-                      sortColumn,
-                      q: searchTerm,
-                      branch: data.value,
-                      page: currentPage,
-                      perPage: rowsPerPage,
-                      status: currentStatus.value,
-                      nationality: nationality.value
-                    })
-                  )
-                }}
-              />
-            </Col>
-            <Col className='my-md-0 my-1' md='4'>
-              <Label for='plan-select'>Nationality</Label>
-              <Select
-                theme={selectThemeColors}
-                isClearable={false}
-                className='react-select'
-                classNamePrefix='select'
-                options={expatOptions}
-                value={nationality}
-                onChange={data => {
-                  setNationality(data)
-                  dispatch(
-                    getData({
-                      sort,
-                      sortColumn,
-                      q: searchTerm,
-                      page: currentPage,
-                      perPage: rowsPerPage,
-                      branch: currentBranch.value,
-                      nationality: data.value,
-                      status: currentStatus.value
-                    })
-                  )
-                }}
-              />
-            </Col>
-            <Col md='4'>
-              <Label for='status-select'>Status</Label>
-              <Select
-                theme={selectThemeColors}
-                isClearable={false}
-                className='react-select'
-                classNamePrefix='select'
-                options={statusOptions}
-                value={currentStatus}
-                onChange={data => {
-                  setCurrentStatus(data)
-                  dispatch(
-                    getData({
-                      sort,
-                      sortColumn,
-                      q: searchTerm,
-                      page: currentPage,
-                      status: data.value,
-                      perPage: rowsPerPage,
-                      currentBranch: currentBranch.value,
-                      nationality: nationality.value
-                    })
-                  )
-                }}
-              />
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-
       <Card className='overflow-hidden'>
         <div className='react-dataTable'>
+          
           <DataTable
             noHeader
             subHeader
@@ -442,7 +320,7 @@ const UsersList = () => {
         </div>
       </Card>
 
-      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} branchOptions={branchOptions} />
+      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
     </Fragment>
   )
 }

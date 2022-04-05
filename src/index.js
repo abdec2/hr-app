@@ -7,6 +7,8 @@ import { Provider } from 'react-redux'
 import { store } from './redux/store'
 
 // ** Intl & ThemeColors Context
+import ability from './configs/acl/ability'
+import { AbilityContext } from './utility/context/Can'
 import { ToastContainer } from 'react-toastify'
 import { ThemeContext } from './utility/context/ThemeColors'
 
@@ -32,23 +34,21 @@ import './@core/assets/fonts/feather/iconfont.css'
 import './@core/scss/core.scss'
 import './assets/scss/style.scss'
 
-import MirageServer from './@db'
-
 // ** Service Worker
 import * as serviceWorker from './serviceWorker'
 
 // ** Lazy load app
 const LazyApp = lazy(() => import('./App'))
 
-MirageServer()
-
 ReactDOM.render(
   <Provider store={store}>
     <Suspense fallback={<Spinner />}>
-      <ThemeContext>
-        <LazyApp />
-        <ToastContainer newestOnTop />
-      </ThemeContext>
+      <AbilityContext.Provider value={ability}>
+        <ThemeContext>
+          <LazyApp />
+          <ToastContainer newestOnTop />
+        </ThemeContext>
+      </AbilityContext.Provider>
     </Suspense>
   </Provider>,
   document.getElementById('root')

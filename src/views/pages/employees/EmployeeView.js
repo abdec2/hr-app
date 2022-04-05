@@ -19,9 +19,8 @@ const EmployeeView = () => {
   // ** Store Vars
   const store = useSelector(state => state.employees)
   const dispatch = useDispatch()
-
   const history = useHistory()
-
+  console.log(store)
   // ** Hooks
   const { id } = useParams()
 
@@ -31,7 +30,7 @@ const EmployeeView = () => {
 
   // ** Get suer on mount
   useEffect(() => {
-    dispatch(getEmployee(parseInt(id)))
+    dispatch(getEmployee(parseInt(id)))    
   }, [dispatch])
 
   return store.selectedEmployee !== null && store.selectedEmployee !== undefined ? (
@@ -41,7 +40,7 @@ const EmployeeView = () => {
       </div>
       <Row>
         <Col xl='4' lg='5' xs={{ order: 1 }} md={{ order: 0, size: 5 }}>
-          <UserInfoCard selectedUser={store.selectedEmployee} />
+          <UserInfoCard selectedUser={store.selectedEmployee.data} />
         </Col>
         
       </Row>

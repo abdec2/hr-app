@@ -19,7 +19,7 @@ import '@styles/react/libs/flatpickr/flatpickr.scss'
 import { Button, Label, Form, Input } from 'reactstrap'
 
 // ** Store & Actions
-import { addEmployee } from '../../store'
+import { addVisa } from '../../store'
 import { useDispatch } from 'react-redux'
 
 const defaultValues = {
@@ -294,7 +294,7 @@ const checkIsValid = data => {
   return Object.values(data).every(field => (typeof field === 'object' ? field !== null : field.length > 0))
 }
 
-const SidebarNewUsers = ({ open, toggleSidebar, branchOptions }) => {
+const SidebarNewUsers = ({ open, toggleSidebar }) => {
   // ** States
   const [data, setData] = useState(null)
   const [dob, setDob] = useState(new Date())
@@ -355,7 +355,7 @@ const SidebarNewUsers = ({ open, toggleSidebar, branchOptions }) => {
     <Sidebar
       size='lg'
       open={open}
-      title='New Employee'
+      title='Add Visa'
       headerClassName='mb-1'
       contentClassName='pt-0'
       toggleSidebar={toggleSidebar}

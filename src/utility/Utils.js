@@ -1,3 +1,6 @@
+import { initialAbility } from "../configs/acl/initialAbility"
+
+
 // ** Checks if an object is empty (returns boolean)
 export const isObjEmpty = obj => Object.keys(obj).length === 0
 
@@ -79,3 +82,12 @@ export const selectThemeColors = theme => ({
 })
 
 export const paginateArray = (array, perPage, page) => array.slice((page - 1) * perPage, page * perPage)
+
+export const getUserAbility = (role) => {
+  if (role === "admin") {
+    return [{action: "manage", subject: "all"}]
+  } else {
+    return initialAbility
+  }
+ 
+}

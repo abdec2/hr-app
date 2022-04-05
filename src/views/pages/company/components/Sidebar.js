@@ -26,7 +26,6 @@ const defaultValues = {
   location: '', 
   cr: '',
   expiry: "",
-  employeesNo: "", 
   timings: '',
   phone: '',
   address: ''
@@ -63,7 +62,6 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
           location: data.location, 
           cr: data.cr,
           expiry: data.expiry[0],
-          employeesNo: data.employeesNo, 
           timings: data.timings,
           phone: data.phone,
           address: data.address,
@@ -145,18 +143,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
           />
         </div>
 
-        <div className='mb-1'>
-          <Label className='form-label' for='employeesNo'>
-            Total employees in branch <span className='text-danger'>*</span>
-          </Label>
-          <Controller
-            name='employeesNo'
-            control={control}
-            render={({ field }) => (
-              <Input id='employeesNo' placeholder='Total Employees in Branch' invalid={errors.employeesNo && true} {...field} />
-            )}
-          />
-        </div>
+        
         <div className='mb-1'>
           <Label className='form-label' for='phone'>
             Phone <span className='text-danger'>*</span>

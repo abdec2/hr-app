@@ -40,8 +40,8 @@ export const columns = [
     name: 'Location',
     sortable: true,
     minWidth: '300px',
-    sortField: 'name',
-    selector: row => row.location,
+    sortField: 'location',
+    selector: row => row.attributes.location,
     cell: row => (
       <div role="button" className='d-flex justify-content-left align-items-center '>
         {/* {renderClient(row)} */}
@@ -55,7 +55,7 @@ export const columns = [
               store.dispatch(toggleEditModal())
             }}
           >
-            <span className='fw-bolder'>{row.location}</span>
+            <span className='fw-bolder text-capitalize'>{row.attributes.location}</span>
           </div>
         </div>
       </div>
@@ -65,35 +65,35 @@ export const columns = [
     name: 'CR No',
     sortable: true,
     minWidth: '172px',
-    sortField: 'cpr',
-    selector: row => row.cr,
-    cell: row => <span className='text-capitalize'>{row.cr}</span>
+    sortField: 'cr',
+    selector: row => row.attributes.cr,
+    cell: row => <span className='text-capitalize'>{row.attributes.cr}</span>
   },
   {
     name: 'Phone',
     minWidth: '138px',
     sortable: true,
     sortField: 'phone',
-    selector: row => row.phone,
-    cell: row => <span className='text-capitalize'>{row.phone}</span>
+    selector: row => row.attributes.phone,
+    cell: row => <span className='text-capitalize'>{row.attributes.phone}</span>
   },
   {
     name: 'Timings',
     minWidth: '230px',
     sortable: true,
-    sortField: 'branch',
-    selector: row => row.timings,
-    cell: row => <span className='text-capitalize'>{row.timings}</span>
+    sortField: 'timings',
+    selector: row => row.attributes.timings,
+    cell: row => <span className='text-capitalize'>{row.attributes.timings}</span>
   },
   {
     name: 'Status',
     minWidth: '138px',
     sortable: true,
     sortField: 'status',
-    selector: row => row.status,
+    selector: row => row.attributes.status,
     cell: row => (
-      <Badge className='text-capitalize' color={statusObj[row.status]} pill>
-        {row.status}
+      <Badge className='text-capitalize' color={statusObj[row.attributes.status]} pill>
+        {row.attributes.status}
       </Badge>
     )
   },
@@ -111,8 +111,8 @@ export const columns = [
               // tag={span}
               className='w-100'
               role="button"
-              onClick={() => {
-              store.dispatch(getCR(row.id))
+              onClick={async () => {
+              await store.dispatch(getCR(row.id))
               store.dispatch(toggleEditModal())
             }}
             >

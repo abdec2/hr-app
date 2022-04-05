@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, Fragment } from 'react'
+import { useState, Fragment, useEffect } from 'react'
 
 // ** Reactstrap Imports
 import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader } from 'reactstrap'
@@ -10,7 +10,8 @@ import Select from 'react-select'
 import { Check, X } from 'react-feather'
 import { useForm, Controller } from 'react-hook-form'
 import withReactContent from 'sweetalert2-react-content'
-import { updateEmployeeStatus, updateEmployee } from './../../store'
+import { updateEmployeeStatus, updateEmployee, getEmployee } from './../../store'
+import { getAllData } from './../../../company/store'
 import Flatpickr from 'react-flatpickr'
 import classnames from 'classnames'
 
@@ -26,7 +27,7 @@ import { selectThemeColors } from '@utils'
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
 import moment from 'moment'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 const statusColors = {
   active: 'light-success',
@@ -37,14 +38,6 @@ const statusColors = {
 const statusOptions = [
   { value: 'active', label: 'Active' },
   { value: 'inactive', label: 'Inactive' }
-]
-
-const branchOptions = [
-  { label: "Seef", value: "seef" },
-  { label: "Tubli", value: "tubli" },
-  { label: "Riffa", value: "riffa" },
-  { label: "Juffair", value: "juffair" },
-  { label: "Muharraq", value: "muharraq" }
 ]
 
 
@@ -307,7 +300,28 @@ const UserInfoCard = ({ selectedUser }) => {
   // ** State
   const [show, setShow] = useState(false)
   const [data, setData] = useState(null)
+  const branches = useSelector(state => state.companies)
   const dispatch = useDispatch()
+  console.log(selectedUser)
+
+  const branchOptions = [{ value: '', label: 'Select Branch' }]
+    branches.allData.map(item => {
+    branchOptions.push({value:item.id.toString(), label: item.attributes.location})
+  })
+
+  // const defaultValues = {
+  //   name: selectedUser.attributes.name,
+  //   dob: selectedUser.attributes.dob,
+  //   cpr: selectedUser.attributes.cpr,
+  //   passport: selectedUser.attributes.passport,
+  //   phone: selectedUser.attributes.phone,
+  //   address: selectedUser.attributes.address,
+  //   expatriate: String(selectedUser.attributes.expatriate),
+  //   contractSigned: String(selectedUser.attributes.contractSigned), 
+  //   nationality: selectedUser.attributes.nationality, 
+  //   cr: String(selectedUser.attributes.cr.data.id),
+  //   status: selectedUser.attributes.status
+  // }
 
   // ** Hook
   const {
@@ -317,21 +331,26 @@ const UserInfoCard = ({ selectedUser }) => {
     setError,
     handleSubmit,
     formState: { errors }
-  } = useForm({
-    defaultValues: {
-      name: selectedUser.name,
-      dob: selectedUser.dob,
-      cpr: selectedUser.cpr,
-      passport: selectedUser.passport,
-      phone: selectedUser.phone,
-      address: selectedUser.address,
-      expatriate: String(selectedUser.expatriate),
-      contractSigned: String(selectedUser.contractSigned), 
-      branch: branchOptions[branchOptions.findIndex(i => i.value === selectedUser.branch)]['value'],
-      nationality: countryOptions[countryOptions.findIndex(i => i.value === selectedUser.nationality)]['value'], 
-      status: statusOptions[statusOptions.findIndex(i => i.value === selectedUser.status)]['value']
-    }
-  })
+  } = useForm({})
+
+  const setFormValues = () => {
+    setValue('name', selectedUser.attributes.name)
+    setValue('dob', selectedUser.attributes.dob)
+    setValue('cpr', selectedUser.attributes.cpr)
+    setValue('passport', selectedUser.attributes.passport)
+    setValue('phone', selectedUser.attributes.phone)
+    setValue('address', selectedUser.attributes.address)
+    setValue('expatriate', selectedUser.attributes.expatriate)
+    setValue('contractSigned', selectedUser.attributes.contractSigned)
+    setValue('nationality', selectedUser.attributes.nationality)
+    setValue('cr', selectedUser.attributes.cr.data.id)
+    setValue('status', selectedUser.attributes.status)
+  }
+
+  useEffect(() => {
+    dispatch(getAllData())    
+    setFormValues()
+  }, [dispatch, selectedUser])
 
   // ** render user img
   const renderUserImg = () => {
@@ -354,7 +373,7 @@ const UserInfoCard = ({ selectedUser }) => {
           initials
           color={color}
           className='rounded mt-3 mb-2'
-          content={selectedUser.name}
+          content={selectedUser.attributes.name}
           contentStyles={{
             borderRadius: 0,
             fontSize: 'calc(48px)',
@@ -371,20 +390,19 @@ const UserInfoCard = ({ selectedUser }) => {
   }
 
   const checkIsValid = data => {
-    return Object.values(data).every(field => (typeof field === 'object' ? field !== null : field.length > 0))
+    return Object.values(data).every(field => (field, typeof field === 'object' ? field !== null : typeof field === 'boolean' ? field !== '' : typeof field === 'number' ? field !== '' : field.length > 0))
     // Object.values(data).map(field => {
-    //   console.log(field, typeof field === 'object' ? field !== null : field.length > 0)
+    //   console.log(field, typeof field === 'object' ? field !== null : typeof field === 'boolean' ? field !== '' : typeof field === 'number' ? field !== '' : field.length > 0)
     // })
   }
   const onSubmit = data => {
     setData(data)
     console.log(data)
-    // console.log(checkIsValid(data))
+    console.log(checkIsValid(data))
     if (checkIsValid(data)) {
       dispatch(updateEmployee({
         id: selectedUser.id,
         address: data.address,
-        branch: data.branch,
         contractSigned: data.contractSigned === "true",
         cpr: data.cpr,
         dob: data.dob,
@@ -393,7 +411,8 @@ const UserInfoCard = ({ selectedUser }) => {
         nationality: data.nationality,
         passport: data.passport,
         phone: data.phone,
-        status: data.status
+        status: data.status, 
+        cr: data.cr
       }))
       setShow(false)
     } else {
@@ -409,14 +428,17 @@ const UserInfoCard = ({ selectedUser }) => {
 
   const handleReset = () => {
     reset({
-      name: selectedUser.name,
-      dob: selectedUser.dob,
-      cpr: selectedUser.cpr,
-      passport: selectedUser.passport,
-      phone: selectedUser.phone,
-      address: selectedUser.address,
-      expatriate: selectedUser.expatriate,
-      contractSigned: selectedUser.contractSigned
+      name: selectedUser.attributes.name,
+      dob: selectedUser.attributes.dob,
+      cpr: selectedUser.attributes.cpr,
+      passport: selectedUser.attributes.passport,
+      phone: selectedUser.attributes.phone,
+      address: selectedUser.attributes.address,
+      expatriate: String(selectedUser.attributes.expatriate),
+      contractSigned: String(selectedUser.attributes.contractSigned), 
+      nationality: selectedUser.attributes.nationality, 
+      cr: String(selectedUser.attributes.cr.data.id),
+      status: selectedUser.attributes.status
     })
   }
 
@@ -463,71 +485,52 @@ const UserInfoCard = ({ selectedUser }) => {
               </div>
             </div>
           </div>
-          {/* <div className='d-flex justify-content-around my-2 pt-75'>
-            <div className='d-flex align-items-start me-2'>
-              <Badge color='light-primary' className='rounded p-75'>
-                <Check className='font-medium-2' />
-              </Badge>
-              <div className='ms-75'>
-                <h4 className='mb-0'>1.23k</h4>
-                <small>Tasks Done</small>
-              </div>
-            </div>
-            <div className='d-flex align-items-start'>
-              <Badge color='light-primary' className='rounded p-75'>
-                <Briefcase className='font-medium-2' />
-              </Badge>
-              <div className='ms-75'>
-                <h4 className='mb-0'>568</h4>
-                <small>Projects Done</small>
-              </div>
-            </div>
-          </div> */}
+          
           <h4 className='fw-bolder border-bottom pb-50 mb-1'>Details</h4>
           <div className='info-container'>
             {selectedUser !== null ? (
               <ul className='list-unstyled'>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>Name:</span>
-                  <span>{selectedUser.name}</span>
+                  <span>{selectedUser.attributes.name}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>Date of Birth:</span>
-                  <span>{moment(selectedUser.dob).format("dddd, MMMM Do YYYY")}</span>
+                  <span>{moment(selectedUser.attributes.dob).format("dddd, MMMM Do YYYY")}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>CPR:</span>
-                  <span className='text-capitalize'>{selectedUser.cpr}</span>
+                  <span className='text-capitalize'>{selectedUser.attributes.cpr}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>Status:</span>
-                  <Badge className='text-capitalize' color={statusColors[selectedUser.status]}>
-                    {selectedUser.status}
+                  <Badge className='text-capitalize' color={statusColors[selectedUser.attributes.status]}>
+                    {selectedUser.attributes.status}
                   </Badge>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>Nationality:</span>
-                  <span>{selectedUser.nationality}</span>
+                  <span>{selectedUser.attributes.nationality}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>Passport:</span>
-                  <span>{selectedUser.passport}</span>
+                  <span>{selectedUser.attributes.passport}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>Phone:</span>
-                  <span>{selectedUser.phone}</span>
+                  <span>{selectedUser.attributes.phone}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>Branch:</span>
-                  <span className='text-capitalize'>{selectedUser.branch}</span>
+                  <span className='text-capitalize'>{selectedUser.attributes.cr.data.attributes.location}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>Contract Signed:</span>
-                  <span>{(selectedUser.contractSigned) ? 'Yes' : 'No'}</span>
+                  <span>{(selectedUser.attributes.contractSigned) ? 'Yes' : 'No'}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>Address:</span>
-                  <span>{selectedUser.address}</span>
+                  <span>{selectedUser.attributes.address}</span>
                 </li>
               </ul>
             ) : null}
@@ -536,14 +539,14 @@ const UserInfoCard = ({ selectedUser }) => {
             <Button color='primary' onClick={() => setShow(true)}>
               Edit
             </Button>
-            <Button disabled={selectedUser.status === 'inactive'} className='ms-1' color='danger' outline onClick={handleSuspendedClick}>
+            <Button disabled={selectedUser.attributes.status === 'inactive'} className='ms-1' color='danger' outline onClick={handleSuspendedClick}>
               Suspended
             </Button>
           </div>
         </CardBody>
       </Card>
       <Modal isOpen={show} toggle={() => setShow(!show)} backdrop={false} className='modal-dialog-centered modal-lg'>
-        <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
+        <ModalHeader className='bg-transparent' toggle={() => setShow(false)}></ModalHeader>
         <ModalBody className='px-sm-5 pt-50 pb-5'>
           <div className='text-center mb-2'>
             <h1 className='mb-1'>Edit Employee Information</h1>
@@ -570,7 +573,7 @@ const UserInfoCard = ({ selectedUser }) => {
                   name='dob'
                   control={control}
                   render={({ field }) => (
-                    <Flatpickr className={classnames('form-control', { 'is-invalid': data !== null && data.dob === '' })} id='dob' onChange={value => setValue('dob', value[0] || '')}  defaultValue={selectedUser.dob} />
+                    <Flatpickr className={classnames('form-control', { 'is-invalid': data !== null && data.dob === '' })} id='dob' onChange={value => setValue('dob', value[0] || '')}  defaultValue={selectedUser.attributes.dob} />
                   )}
                 />
               </Col>
@@ -632,7 +635,7 @@ const UserInfoCard = ({ selectedUser }) => {
                       classNamePrefix='select'
                       options={countryOptions}
                       theme={selectThemeColors}
-                      defaultValue={countryOptions[countryOptions.findIndex(i => i.value === selectedUser.nationality)]}
+                      defaultValue={countryOptions[countryOptions.findIndex(i => i.value === selectedUser.attributes.nationality)]}
                       className={classnames('react-select', { 'is-invalid': data !== null && data.nationality === '' })}
                       onChange={value => setValue('nationality', value.value)}
                     />
@@ -688,23 +691,23 @@ const UserInfoCard = ({ selectedUser }) => {
 
               </Col>
               <Col md={6} xs={12}>
-                <Label className='form-label' for='branch'>
+                <Label className='form-label' for='cr'>
                   Branch <span className='text-danger'>*</span>
                 </Label>
                 <Controller
-                  name='branch'
+                  name='cr'
                   control={control}
                   render={({ field }) => (
                     // <Input id='country' placeholder='Australia' invalid={errors.country && true} {...field} />
                     <Select
-                      id='branch'
+                      id='cr'
                       isClearable={false}
                       classNamePrefix='select'
                       options={branchOptions}
                       theme={selectThemeColors}
-                      defaultValue={branchOptions[branchOptions.findIndex(i => i.value === selectedUser.branch)]}
-                      className={classnames('react-select', { 'is-invalid': data !== null && data.branch === '' })}
-                      onChange={value => setValue('branch', value.value)}
+                      defaultValue={branchOptions[branchOptions.findIndex(i => parseInt(i.value) === selectedUser.attributes.cr.data.id)]}
+                      className={classnames('react-select', { 'is-invalid': data !== null && data.cr === '' })}
+                      onChange={value => setValue('cr', value.value)}
                     />
                   )}
                 />
@@ -714,7 +717,7 @@ const UserInfoCard = ({ selectedUser }) => {
                   Status:
                 </Label>
                 <Controller
-                  name='branch'
+                  name='status'
                   control={control}
                   render={({ field }) => (
                     // <Input id='country' placeholder='Australia' invalid={errors.country && true} {...field} />
@@ -725,7 +728,7 @@ const UserInfoCard = ({ selectedUser }) => {
                       classNamePrefix='select'
                       options={statusOptions}
                       theme={selectThemeColors}
-                      defaultValue={statusOptions[statusOptions.findIndex(i => i.value === selectedUser.status)]}
+                      defaultValue={statusOptions[statusOptions.findIndex(i => i.value === selectedUser.attributes.status)]}
                       onChange={value => setValue('status', value.value)}
                     />
                   )}
