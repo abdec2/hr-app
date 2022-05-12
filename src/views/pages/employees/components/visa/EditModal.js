@@ -8,13 +8,13 @@ import classnames from 'classnames'
 import { selectThemeColors } from '@utils'
 
 
-import { toggleEditModal, updateCr, getCR } from './../store'
+import { toggleEditModal, updateVisa } from './../../store'
 import { useEffect, useState } from "react"
 
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 
-const EditModal = () => {
-    const store = useSelector(state => state.companies)
+const EditModal = ({store}) => {
+    
     const dispatch = useDispatch()
     const [data, setData] = useState(null)
     const [status, setStatus] = useState(null)
@@ -22,11 +22,6 @@ const EditModal = () => {
     const checkIsValid = data => {
         return Object.values(data).map(field => (typeof field === 'object' ? field !== null : field.length > 0))
     }
-
-    const statusOptions = [
-        { value: 'active', label: 'Active' },
-        { value: 'inactive', label: 'Inactive' }
-    ]
 
     const {
         reset,
@@ -37,14 +32,6 @@ const EditModal = () => {
         formState: { errors }
     } = useForm({
         defaultValues: {
-            // location: store.selectedCr?.location,
-            // cr: store.selectedCr?.cr,
-            // expiry: store.selectedCr?.expiry,
-            // employeesNo: store.selectedCr?.employeesNo,
-            // timings: store.selectedCr?.timings,
-            // phone: store.selectedCr?.phone,
-            // address: store.selectedCr?.address,
-            // status: statusOptions[statusOptions.findIndex(option => option.value === store.selectedCr?.status)]
         }
     })
 
@@ -53,15 +40,11 @@ const EditModal = () => {
         console.log(data)
         if (checkIsValid(data)) {
             dispatch(toggleEditModal())
-            dispatch(updateCr({
-                id: store.selectedCr.id,
-                location: data.location,
-                cr: data.cr,
-                expiry: data.expiry,
-                timings: data.timings,
-                phone: data.phone,
-                address: data.address,
-                status: data.status
+            dispatch(updateVisa({
+                id: store.selectedVisa.data.id,
+                rp_no: data.rp_no,
+                rp_issue: data.rp_issue, 
+                rp_expiry: data.rp_expiry
             }))
         } else {
             for (const key in data) {
@@ -80,169 +63,70 @@ const EditModal = () => {
 
     }
 
-    const handleReset = () => {
-        setValue("location", store.selectedCr.attributes.location)
-        setValue("cr", store.selectedCr.attributes.cr)
-        setValue("expiry", store.selectedCr.attributes.expiry)
-        setValue("timings", store.selectedCr.attributes.timings)
-        setValue("phone", store.selectedCr.attributes.phone)
-        setValue("address", store.selectedCr.attributes.address)
-        setValue("status", statusOptions[statusOptions.findIndex(option => option.value === store.selectedCr?.attributes.status)]['value'])
-    }
-
     useEffect(() => {
-        if (store.selectedCr) {
-            setValue("location", store.selectedCr.attributes.location)
-            setValue("cr", store.selectedCr.attributes.cr)
-            setValue("expiry", store.selectedCr.attributes.expiry)
-            setValue("timings", store.selectedCr.attributes.timings)
-            setValue("phone", store.selectedCr.attributes.phone)
-            setValue("address", store.selectedCr.attributes.address)
-            setValue("status", statusOptions[statusOptions.findIndex(option => option.value === store.selectedCr?.attributes.status)]['value'])
+        if (store.selectedVisa) {
+            setValue("rp_no", store.selectedVisa.data.attributes.rp_no)
+            setValue("rp_issue", store.selectedVisa.data.attributes.rp_issue)
+            setValue("rp_expiry", store.selectedVisa.data.attributes.rp_expiry)
         }
-
-    }, [store.selectedCr])
+    }, [store.selectedVisa])
     return (
         <Modal isOpen={store.editModal} toggle={() => dispatch(toggleEditModal())} className='modal-dialog-centered modal-lg'>
             <ModalHeader className='bg-transparent' toggle={() => dispatch(toggleEditModal())}></ModalHeader>
             <ModalBody className='px-sm-5 pt-50 pb-5'>
                 <div className='text-center mb-2'>
-                    <h1 className='mb-1'>Edit CR Information</h1>
+                    <h1 className='mb-1'>Edit Visa Information</h1>
                 </div>
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Row className='gy-1 pt-75'>
-                        <Col md={6} xs={12}>
-                            <Label className='form-label' for='location'>
-                                Location
-                            </Label>
-                            <Controller
-                                control={control}
-                                id='location'
-                                name='location'
-                                render={({ field }) => (
-                                    <Input id='location' placeholder='Branch Area' invalid={errors.location && true} defaultValue={store.selectedCr?.attributes.location} onChange={value => setValue('location', value.target.value)} />
-                                )}
-                            />
-                        </Col>
-                        <Col md={6} xs={12}>
-                            <Label className='form-label' for='cr'>
-                                CR No
-                            </Label>
-                            <Controller
-                                control={control}
-                                id='cr'
-                                name='cr'
-                                render={({ field }) => (
-                                    <Input id='cr' placeholder='Enter CR Number' invalid={errors.cr && true} defaultValue={store.selectedCr?.attributes.cr} onChange={value => setValue('cr', value.target.value)} />
-                                )}
-                            />
-                        </Col>
                         <Col xs={12}>
-                            <Label className='form-label' for='expiry'>
-                                Expiry Date
+                            <Label className='form-label' for='rp_no'>
+                                RP No
                             </Label>
                             <Controller
                                 control={control}
-                                id='expiry'
-                                name='expiry'
+                                id='rp_no'
+                                name='rp_no'
+                                render={({ field }) => (
+                                    <Input id='rp_no' placeholder='RP Number' invalid={errors.rp_no && true} {...field}  />
+                                )}
+                                // defaultValue={store.selectedVisa?.data.attributes.rp_no} onChange={value => setValue('rp_no', value.target.value)}
+                            />
+                        </Col>
+                        
+                        <Col xs={12}>
+                            <Label className='form-label' for='rp_issue'>
+                                RP Issue Date
+                            </Label>
+                            <Controller
+                                control={control}
+                                id='rp_issue'
+                                name='rp_issue'
+                                render={({ field }) => (
+                                    <Flatpickr className={classnames('form-control', { 'is-invalid': data !== null && data.rp_issue === '' })} id='rp_issue' onChange={value => setValue('rp_issue', value[0].toISOString())} 
+                                    defaultValue={store.selectedVisa?.data.attributes.rp_issue} />
+                                   
+                                )}
+                            />
+                        </Col>
+
+                        <Col xs={12}>
+                            <Label className='form-label' for='rp_expiry'>
+                                RP Expiry Date
+                            </Label>
+                            <Controller
+                                control={control}
+                                id='rp_expiry'
+                                name='rp_expiry'
                                 render={({ field }) => (
                                     <Flatpickr 
-                                    options={{ minDate: "today" }} 
-                                    className={classnames('form-control', { 'is-invalid': data !== null && data.expiry?.length === 0 })} 
-                                    id='expiry' 
-                                    onChange={value => setValue('expiry', value[0].toISOString())} 
-                                    defaultValue={store.selectedCr?.attributes.expiry} />
+                                    className={classnames('form-control', { 'is-invalid': data !== null && data.rp_expiry?.length === 0 })} 
+                                    id='rp_expiry' 
+                                    onChange={value => setValue('rp_expiry', value[0].toISOString())} 
+                                    defaultValue={store.selectedVisa?.data.attributes.rp_expiry} />
                                 )}
                             />
                         </Col>
-
-                        <Col md={6} xs={12}>
-                            <Label className='form-label' for='timings'>
-                                Branch Timing
-                            </Label>
-                            <Controller
-                                control={control}
-                                id='timings'
-                                name='timings'
-                                render={({ field }) => (
-                                    <Input
-                                        invalid={errors.timings && true}
-                                        defaultValue={store.selectedCr?.attributes.timings}
-                                        onChange={value => setValue('timings', value.target.value)}
-                                    />
-                                )}
-                            />
-
-                        </Col>
-
-                        <Col md={6} xs={12}>
-                            <Label className='form-label' for='phone'>
-                                Phone
-                            </Label>
-                            <Controller
-                                id='phone'
-                                name='phone'
-                                control={control}
-                                render={({ field }) => (
-                                    <Input
-                                        invalid={errors.phone && true}
-                                        defaultValue={store.selectedCr?.attributes.phone}
-                                        onChange={value => setValue('phone', value.target.value)}
-                                    />
-                                )}
-
-                            />
-
-                        </Col>
-
-                        <Col xs={12}>
-                            <Label className='form-label' for='address'>
-                                Address
-                            </Label>
-                            <Controller
-                                control={control}
-                                name='address'
-                                id='address'
-                                render={({ field }) => (
-                                    <Input
-                                        type="textarea"
-                                        invalid={errors.address && true}
-                                        defaultValue={store.selectedCr?.attributes.address} 
-                                        onChange={value => setValue('address', value.target.value)}
-                                    />
-                                )}
-                            />
-
-                        </Col>
-
-                        <Col xs={12}>
-                            <Label className='form-label' for='status'>
-                                Status:
-                            </Label>
-                            <Controller
-                                control={control}
-                                name='status'
-                                id='status'
-                                render={({ field }) => (
-                                    <Select
-                                        id='status'
-                                        isClearable={false}
-                                        className='react-select'
-                                        classNamePrefix='select'
-                                        options={statusOptions}
-                                        theme={selectThemeColors}
-                                        defaultValue={statusOptions[statusOptions.findIndex(option => option.value === store.selectedCr?.attributes.status)]}
-                                        onChange={value => setValue('status', value.value)}
-                                        
-
-                                    // defaultValue={statusOptions.filter(option => option.value === store.selectedCr.status)}
-                                    />
-                                )}
-                            />
-
-                        </Col>
-
-
                         <Col xs={12} className='text-center mt-2 pt-50'>
                             <Button type='submit' className='me-1' color='primary'>
                                 Submit
@@ -252,13 +136,14 @@ const EditModal = () => {
                                 color='secondary'
                                 outline
                                 onClick={() => {
-                                    handleReset()
                                     dispatch(toggleEditModal())
                                 }}
                             >
                                 Cancel
                             </Button>
                         </Col>
+                                   
+                        
                     </Row>
                 </Form>
             </ModalBody>

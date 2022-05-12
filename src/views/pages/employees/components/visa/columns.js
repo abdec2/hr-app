@@ -6,7 +6,7 @@ import Avatar from '@components/avatar'
 
 // ** Store & Actions
 import { store } from '@store/store'
-import { getVisa, deleteVisa } from '../../store/index'
+import { getVisa, deleteVisa, toggleEditModal } from '../../store/index'
 
 // ** Icons Imports
 import { Edit2, MoreVertical, Trash2 } from 'react-feather'
@@ -51,6 +51,10 @@ export const columns = [
             // to={`/employee/view/${row.id}`}
             className='user_name text-truncate text-body'
             // onClick={() => store.dispatch(getEmployee(row.id))}
+            onClick={async () => {
+              await store.dispatch(getVisa(row.id))
+              store.dispatch(toggleEditModal())
+            }}
           >
             <span className='fw-bolder'>{row.attributes.employee.data.attributes.name}</span>
           </div>
@@ -123,7 +127,10 @@ export const columns = [
           <DropdownMenu>
             <DropdownItem
               className='w-100'
-              onClick={() => store.dispatch(getVisa(row.id))}
+              onClick={async () => {
+                await store.dispatch(getVisa(row.id))
+                store.dispatch(toggleEditModal())
+              }}
             >
               <Edit2 size={14} className='me-50' />
               <span className='align-middle'>Edit</span>

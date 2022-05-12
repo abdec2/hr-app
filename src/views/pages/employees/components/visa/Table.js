@@ -8,7 +8,7 @@ import Sidebar from './Sidebar'
 import { columns } from './columns'
 
 // ** Store & Actions
-import { getAllVisas, getVisaData } from './../../store'
+import { getAllVisas, getVisaData, getAllData } from './../../store'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Third Party Components
@@ -20,6 +20,8 @@ import './../../styles/style.css'
 
 // ** Utils
 import { selectThemeColors } from '@utils'
+
+import EditModal from './EditModal'
 
 // ** Reactstrap Imports
 import {
@@ -126,7 +128,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
           </div>
 
           <div className='d-flex align-items-center table-header-actions'>
-            <UncontrolledDropdown className='me-1'>
+            {/* <UncontrolledDropdown className='me-1'>
               <DropdownToggle color='secondary' caret outline>
                 <Share className='font-small-4 me-50' />
                 <span className='align-middle'>Export</span>
@@ -137,7 +139,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
                   <span className='align-middle'>CSV</span>
                 </DropdownItem>
               </DropdownMenu>
-            </UncontrolledDropdown>
+            </UncontrolledDropdown> */}
 
             <Button className='add-new-user' color='primary' onClick={toggleSidebar}>
               Add New Visa
@@ -169,6 +171,7 @@ const UsersList = () => {
   // ** Get data on mount
   useEffect(() => {
     dispatch(getAllVisas())
+    dispatch(getAllData())
     dispatch(
       getVisaData({
         sort,
@@ -182,12 +185,10 @@ const UsersList = () => {
 
   // ** User filter options
 
-  const statusOptions = [
-    { value: '', label: 'Select Status', number: 0 },
-    { value: 'applied', label: 'Applied', number: 1 },
-    { value: 'valid', label: 'Valid', number: 2 },
-    { value: 'invalid', label: 'Invalid', number: 2 }
-  ]
+  const employeeOptions = []
+  store.allData.map(item => {
+    employeeOptions.push({value:item.id.toString(), label: item.attributes.name})
+  })
 
   // ** Function in get data on page change
   const handlePagination = page => {
@@ -320,7 +321,8 @@ const UsersList = () => {
         </div>
       </Card>
 
-      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} employeeOptions={employeeOptions} />
+      <EditModal store={store}/>
     </Fragment>
   )
 }

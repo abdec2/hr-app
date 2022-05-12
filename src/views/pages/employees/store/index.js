@@ -45,7 +45,7 @@ export const getData = createAsyncThunk('employees/getData', async params => {
           }
         }
       ],
-      
+
       status: {
         $containsi: status
       }
@@ -72,18 +72,18 @@ export const getData = createAsyncThunk('employees/getData', async params => {
       encodeValuesOnly: true
     }
   )
-const dataUri = `${host}/api/employees?${query}`
-console.log(dataUri)
-const response = await axios.get(dataUri, {
-  headers: {
-    Authorization: `Bearer ${userData.token}`
+  const dataUri = `${host}/api/employees?${query}`
+  console.log(dataUri)
+  const response = await axios.get(dataUri, {
+    headers: {
+      Authorization: `Bearer ${userData.token}`
+    }
+  })
+  return {
+    params,
+    data: response.data.data,
+    totalPages: response.data.meta.pagination.pageCount
   }
-})
-return {
-  params,
-  data: response.data.data,
-  totalPages: response.data.meta.pagination.pageCount
-}
 })
 
 export const getEmployee = createAsyncThunk('employees/getEmployee', async id => {
@@ -104,7 +104,7 @@ export const getEmployee = createAsyncThunk('employees/getEmployee', async id =>
 
 export const addEmployee = createAsyncThunk('employees/addEmployee', async (employee, { dispatch, getState }) => {
   console.log(employee)
-  await axios.post(`${host}/api/employees`, {data: employee}, {
+  await axios.post(`${host}/api/employees`, { data: employee }, {
     headers: {
       Authorization: `Bearer ${userData.token}`
     }
@@ -126,7 +126,7 @@ export const deleteEmployee = createAsyncThunk('employees/deleteEmployee', async
 })
 
 export const updateEmployeeStatus = createAsyncThunk('employees/updateEmployeeStatus', async (status, { dispatch, getState }) => {
-  await axios.put(`${host}/api/employees/${status.id}`, {data: {...status}}, {
+  await axios.put(`${host}/api/employees/${status.id}`, { data: { ...status } }, {
     headers: {
       Authorization: `Bearer ${userData.token}`
     }
@@ -138,7 +138,7 @@ export const updateEmployeeStatus = createAsyncThunk('employees/updateEmployeeSt
 
 export const updateEmployee = createAsyncThunk('employees/update', async (employee, { dispatch, getState }) => {
   console.log(employee)
-  await axios.put(`${host}/api/employees/${employee.id}`, {data: {...employee}}, {
+  await axios.put(`${host}/api/employees/${employee.id}`, { data: { ...employee } }, {
     headers: {
       Authorization: `Bearer ${userData.token}`
     }
@@ -178,9 +178,9 @@ export const getVisaData = createAsyncThunk('employees/visaData', async params =
       $or: [
         {
           employee: {
-              name: {
-                $containsi: q
-              }
+            name: {
+              $containsi: q
+            }
           }
         },
         {
@@ -202,18 +202,18 @@ export const getVisaData = createAsyncThunk('employees/visaData', async params =
       encodeValuesOnly: true
     }
   )
-const dataUri = `${host}/api/visas?${query}`
-console.log(dataUri)
-const response = await axios.get(dataUri, {
-  headers: {
-    Authorization: `Bearer ${userData.token}`
+  const dataUri = `${host}/api/visas?${query}`
+  console.log(dataUri)
+  const response = await axios.get(dataUri, {
+    headers: {
+      Authorization: `Bearer ${userData.token}`
+    }
+  })
+  return {
+    params,
+    data: response.data.data,
+    totalPages: response.data.meta.pagination.pageCount
   }
-})
-return {
-  params,
-  data: response.data.data,
-  totalPages: response.data.meta.pagination.pageCount
-}
 })
 
 export const deleteVisa = createAsyncThunk('employees/deleteVisa', async (id, { dispatch, getState }) => {
@@ -245,13 +245,26 @@ export const getVisa = createAsyncThunk('employees/getVisa', async id => {
 
 export const addVisa = createAsyncThunk('employees/addVisa', async (visa, { dispatch, getState }) => {
   console.log(visa)
-  await axios.post(`${host}/api/visas`, {data: visa}, {
+  await axios.post(`${host}/api/visas`, { data: visa }, {
     headers: {
       Authorization: `Bearer ${userData.token}`
     }
   })
-  await dispatch(getData(getState().employees.visaParams))
-  await dispatch(getAllData())
+  await dispatch(getVisaData(getState().employees.visaParams))
+  await dispatch(getAllVisas())
+  return visa
+})
+
+export const updateVisa = createAsyncThunk('employees/updateVisa', async (visa, { dispatch, getState }) => {
+  console.log(visa)
+  await axios.put(`${host}/api/visas/${visa.id}`, { data: { ...visa } }, {
+    headers: {
+      Authorization: `Bearer ${userData.token}`
+    }
+  })
+  await dispatch(getVisa(visa.id))
+  await dispatch(getVisaData(getState().employees.visaParams))
+  await dispatch(getAllVisas())
   return visa
 })
 
@@ -267,9 +280,14 @@ export const employeeSlice = createSlice({
     allVisas: [],
     visaData: [],
     selectedVisa: null,
-    selectedEmployee: null
+    selectedEmployee: null,
+    editModal: false
   },
-  reducers: {},
+  reducers: {
+    toggleEditModal: (state) => {
+      state.editModal = !state.editModal
+    }
+  },
   extraReducers: builder => {
     builder
       .addCase(getAllData.fulfilled, (state, action) => {
@@ -297,4 +315,5 @@ export const employeeSlice = createSlice({
   }
 })
 
+export const { toggleEditModal } = employeeSlice.actions
 export default employeeSlice.reducer

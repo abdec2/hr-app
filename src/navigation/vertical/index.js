@@ -24,27 +24,27 @@ export default [
     icon: <CreditCard size={20} />
     
   }, 
-  {
-    id: 'working_hours', 
-    title: 'Working Hours', 
-    navLink: '/employees/working', 
-    icon: <Clock size={20} />
+  // {
+  //   id: 'working_hours', 
+  //   title: 'Working Hours', 
+  //   navLink: '/employees/working', 
+  //   icon: <Clock size={20} />
     
-  },
-  {
-    id: 'gosi', 
-    title: 'GOSI', 
-    navLink: '/employees/gosi', 
-    icon: <Shield size={20} />
+  // },
+  // {
+  //   id: 'gosi', 
+  //   title: 'GOSI', 
+  //   navLink: '/employees/gosi', 
+  //   icon: <Shield size={20} />
     
-  },
-  {
-    id: 'request', 
-    title: 'Requests', 
-    navLink: '/employees/request',
-    icon: <FilePlus size={20} />
+  // },
+  // {
+  //   id: 'request', 
+  //   title: 'Requests', 
+  //   navLink: '/employees/request',
+  //   icon: <FilePlus size={20} />
     
-  },
+  // },
     
  
   {

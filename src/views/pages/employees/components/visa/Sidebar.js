@@ -21,283 +21,24 @@ import { Button, Label, Form, Input } from 'reactstrap'
 // ** Store & Actions
 import { addVisa } from '../../store'
 import { useDispatch } from 'react-redux'
+import moment from 'moment'
 
 const defaultValues = {
-  name: '',
-  dob: '',
-  cpr: '',
-  nationality: '',
-  passport: '',
-  phone: '',
-  address: '',
-  expatriate: '',
-  contractSigned: '',
-  branch: '',
-  salary: ''
+  rp_no: '',
+  rp_issue: '',
+  rp_expiry: '',
+  employee: ''
 }
-
-const countryOptions = [
-  { label: "Select Nationality", value: "" },
-  { label: "Afghanistan", value: "Afghanistan" },
-  { label: "Åland Islands", value: "Åland Islands" },
-  { label: "Albania", value: "Albania" },
-  { label: "Algeria", value: "Algeria" },
-  { label: "American Samoa", value: "American Samoa" },
-  { label: "Andorra", value: "Andorra" },
-  { label: "Angola", value: "Angola" },
-  { label: "Anguilla", value: "Anguilla" },
-  { label: "Antarctica", value: "Antarctica" },
-  { label: "Antigua and Barbuda", value: "Antigua and Barbuda" },
-  { label: "Argentina", value: "Argentina" },
-  { label: "Armenia", value: "Armenia" },
-  { label: "Aruba", value: "Aruba" },
-  { label: "Australia", value: "Australia" },
-  { label: "Austria", value: "Austria" },
-  { label: "Azerbaijan", value: "Azerbaijan" },
-  { label: "Bahamas (the)", value: "Bahamas (the)" },
-  { label: "Bahrain", value: "Bahrain" },
-  { label: "Bangladesh", value: "Bangladesh" },
-  { label: "Barbados", value: "Barbados" },
-  { label: "Belarus", value: "Belarus" },
-  { label: "Belgium", value: "Belgium" },
-  { label: "Belize", value: "Belize" },
-  { label: "Benin", value: "Benin" },
-  { label: "Bermuda", value: "Bermuda" },
-  { label: "Bhutan", value: "Bhutan" },
-  { label: "Bolivia (Plurinational State of)", value: "Bolivia (Plurinational State of)" },
-  { label: "Bonaire, Sint Eustatius and Saba", value: "Bonaire, Sint Eustatius and Saba" },
-  { label: "Bosnia and Herzegovina", value: "Bosnia and Herzegovina" },
-  { label: "Botswana", value: "Botswana" },
-  { label: "Bouvet Island", value: "Bouvet Island" },
-  { label: "Brazil", value: "Brazil" },
-  { label: "British Indian Ocean Territory (the)", value: "British Indian Ocean Territory (the)" },
-  { label: "Brunei Darussalam", value: "Brunei Darussalam" },
-  { label: "Bulgaria", value: "Bulgaria" },
-  { label: "Burkina Faso", value: "Burkina Faso" },
-  { label: "Burundi", value: "Burundi" },
-  { label: "Cabo Verde", value: "Cabo Verde" },
-  { label: "Cambodia", value: "Cambodia" },
-  { label: "Cameroon", value: "Cameroon" },
-  { label: "Canada", value: "Canada" },
-  { label: "Cayman Islands (the)", value: "Cayman Islands (the)" },
-  { label: "Central African Republic (the)", value: "Central African Republic (the)" },
-  { label: "Chad", value: "Chad" },
-  { label: "Chile", value: "Chile" },
-  { label: "China", value: "China" },
-  { label: "Christmas Island", value: "Christmas Island" },
-  { label: "Cocos (Keeling) Islands (the)", value: "Cocos (Keeling) Islands (the)" },
-  { label: "Colombia", value: "Colombia" },
-  { label: "Comoros (the)", value: "Comoros (the)" },
-  { label: "Congo (the Democratic Republic of the)", value: "Congo (the Democratic Republic of the)" },
-  { label: "Congo (the)", value: "Congo (the)" },
-  { label: "Cook Islands (the)", value: "Cook Islands (the)" },
-  { label: "Costa Rica", value: "Costa Rica" },
-  { label: "Croatia", value: "Croatia" },
-  { label: "Cuba", value: "Cuba" },
-  { label: "Curaçao", value: "Curaçao" },
-  { label: "Cyprus", value: "Cyprus" },
-  { label: "Czechia", value: "Czechia" },
-  { label: "Côte d'Ivoire", value: "Côte d'Ivoire" },
-  { label: "Denmark", value: "Denmark" },
-  { label: "Djibouti", value: "Djibouti" },
-  { label: "Dominica", value: "Dominica" },
-  { label: "Dominican Republic (the)", value: "Dominican Republic (the)" },
-  { label: "Ecuador", value: "Ecuador" },
-  { label: "Egypt", value: "Egypt" },
-  { label: "El Salvador", value: "El Salvador" },
-  { label: "Equatorial Guinea", value: "Equatorial Guinea" },
-  { label: "Eritrea", value: "Eritrea" },
-  { label: "Estonia", value: "Estonia" },
-  { label: "Eswatini", value: "Eswatini" },
-  { label: "Ethiopia", value: "Ethiopia" },
-  { label: "Falkland Islands (the) [Malvinas]", value: "Falkland Islands (the) [Malvinas]" },
-  { label: "Faroe Islands (the)", value: "Faroe Islands (the)" },
-  { label: "Fiji", value: "Fiji" },
-  { label: "Finland", value: "Finland" },
-  { label: "France", value: "France" },
-  { label: "French Guiana", value: "French Guiana" },
-  { label: "French Polynesia", value: "French Polynesia" },
-  { label: "French Southern Territories (the)", value: "French Southern Territories (the)" },
-  { label: "Gabon", value: "Gabon" },
-  { label: "Gambia (the)", value: "Gambia (the)" },
-  { label: "Georgia", value: "Georgia" },
-  { label: "Germany", value: "Germany" },
-  { label: "Ghana", value: "Ghana" },
-  { label: "Gibraltar", value: "Gibraltar" },
-  { label: "Greece", value: "Greece" },
-  { label: "Greenland", value: "Greenland" },
-  { label: "Grenada", value: "Grenada" },
-  { label: "Guadeloupe", value: "Guadeloupe" },
-  { label: "Guam", value: "Guam" },
-  { label: "Guatemala", value: "Guatemala" },
-  { label: "Guernsey", value: "Guernsey" },
-  { label: "Guinea", value: "Guinea" },
-  { label: "Guinea-Bissau", value: "Guinea-Bissau" },
-  { label: "Guyana", value: "Guyana" },
-  { label: "Haiti", value: "Haiti" },
-  { label: "Heard Island and McDonald Islands", value: "Heard Island and McDonald Islands" },
-  { label: "Holy See (the)", value: "Holy See (the)" },
-  { label: "Honduras", value: "Honduras" },
-  { label: "Hong Kong", value: "Hong Kong" },
-  { label: "Hungary", value: "Hungary" },
-  { label: "Iceland", value: "Iceland" },
-  { label: "India", value: "India" },
-  { label: "Indonesia", value: "Indonesia" },
-  { label: "Iran (Islamic Republic of)", value: "Iran (Islamic Republic of)" },
-  { label: "Iraq", value: "Iraq" },
-  { label: "Ireland", value: "Ireland" },
-  { label: "Isle of Man", value: "Isle of Man" },
-  { label: "Israel", value: "Israel" },
-  { label: "Italy", value: "Italy" },
-  { label: "Jamaica", value: "Jamaica" },
-  { label: "Japan", value: "Japan" },
-  { label: "Jersey", value: "Jersey" },
-  { label: "Jordan", value: "Jordan" },
-  { label: "Kazakhstan", value: "Kazakhstan" },
-  { label: "Kenya", value: "Kenya" },
-  { label: "Kiribati", value: "Kiribati" },
-  { label: "Korea (the Democratic People's Republic of)", value: "Korea (the Democratic People's Republic of)" },
-  { label: "Korea (the Republic of)", value: "Korea (the Republic of)" },
-  { label: "Kuwait", value: "Kuwait" },
-  { label: "Kyrgyzstan", value: "Kyrgyzstan" },
-  { label: "Lao People's Democratic Republic (the)", value: "Lao People's Democratic Republic (the)" },
-  { label: "Latvia", value: "Latvia" },
-  { label: "Lebanon", value: "Lebanon" },
-  { label: "Lesotho", value: "Lesotho" },
-  { label: "Liberia", value: "Liberia" },
-  { label: "Libya", value: "Libya" },
-  { label: "Liechtenstein", value: "Liechtenstein" },
-  { label: "Lithuania", value: "Lithuania" },
-  { label: "Luxembourg", value: "Luxembourg" },
-  { label: "Macao", value: "Macao" },
-  { label: "Madagascar", value: "Madagascar" },
-  { label: "Malawi", value: "Malawi" },
-  { label: "Malaysia", value: "Malaysia" },
-  { label: "Maldives", value: "Maldives" },
-  { label: "Mali", value: "Mali" },
-  { label: "Malta", value: "Malta" },
-  { label: "Marshall Islands (the)", value: "Marshall Islands (the)" },
-  { label: "Martinique", value: "Martinique" },
-  { label: "Mauritania", value: "Mauritania" },
-  { label: "Mauritius", value: "Mauritius" },
-  { label: "Mayotte", value: "Mayotte" },
-  { label: "Mexico", value: "Mexico" },
-  { label: "Micronesia (Federated States of)", value: "Micronesia (Federated States of)" },
-  { label: "Moldova (the Republic of)", value: "Moldova (the Republic of)" },
-  { label: "Monaco", value: "Monaco" },
-  { label: "Mongolia", value: "Mongolia" },
-  { label: "Montenegro", value: "Montenegro" },
-  { label: "Montserrat", value: "Montserrat" },
-  { label: "Morocco", value: "Morocco" },
-  { label: "Mozambique", value: "Mozambique" },
-  { label: "Myanmar", value: "Myanmar" },
-  { label: "Namibia", value: "Namibia" },
-  { label: "Nauru", value: "Nauru" },
-  { label: "Nepal", value: "Nepal" },
-  { label: "Netherlands (the)", value: "Netherlands (the)" },
-  { label: "New Caledonia", value: "New Caledonia" },
-  { label: "New Zealand", value: "New Zealand" },
-  { label: "Nicaragua", value: "Nicaragua" },
-  { label: "Niger (the)", value: "Niger (the)" },
-  { label: "Nigeria", value: "Nigeria" },
-  { label: "Niue", value: "Niue" },
-  { label: "Norfolk Island", value: "Norfolk Island" },
-  { label: "Northern Mariana Islands (the)", value: "Northern Mariana Islands (the)" },
-  { label: "Norway", value: "Norway" },
-  { label: "Oman", value: "Oman" },
-  { label: "Pakistan", value: "Pakistan" },
-  { label: "Palau", value: "Palau" },
-  { label: "Palestine, State of", value: "Palestine, State of" },
-  { label: "Panama", value: "Panama" },
-  { label: "Papua New Guinea", value: "Papua New Guinea" },
-  { label: "Paraguay", value: "Paraguay" },
-  { label: "Peru", value: "Peru" },
-  { label: "Philippines (the)", value: "Philippines (the)" },
-  { label: "Pitcairn", value: "Pitcairn" },
-  { label: "Poland", value: "Poland" },
-  { label: "Portugal", value: "Portugal" },
-  { label: "Puerto Rico", value: "Puerto Rico" },
-  { label: "Qatar", value: "Qatar" },
-  { label: "Republic of North Macedonia", value: "Republic of North Macedonia" },
-  { label: "Romania", value: "Romania" },
-  { label: "Russian Federation (the)", value: "Russian Federation (the)" },
-  { label: "Rwanda", value: "Rwanda" },
-  { label: "Réunion", value: "Réunion" },
-  { label: "Saint Barthélemy", value: "Saint Barthélemy" },
-  { label: "Saint Helena, Ascension and Tristan da Cunha", value: "Saint Helena, Ascension and Tristan da Cunha" },
-  { label: "Saint Kitts and Nevis", value: "Saint Kitts and Nevis" },
-  { label: "Saint Lucia", value: "Saint Lucia" },
-  { label: "Saint Martin (French part)", value: "Saint Martin (French part)" },
-  { label: "Saint Pierre and Miquelon", value: "Saint Pierre and Miquelon" },
-  { label: "Saint Vincent and the Grenadines", value: "Saint Vincent and the Grenadines" },
-  { label: "Samoa", value: "Samoa" },
-  { label: "San Marino", value: "San Marino" },
-  { label: "Sao Tome and Principe", value: "Sao Tome and Principe" },
-  { label: "Saudi Arabia", value: "Saudi Arabia" },
-  { label: "Senegal", value: "Senegal" },
-  { label: "Serbia", value: "Serbia" },
-  { label: "Seychelles", value: "Seychelles" },
-  { label: "Sierra Leone", value: "Sierra Leone" },
-  { label: "Singapore", value: "Singapore" },
-  { label: "Sint Maarten (Dutch part)", value: "Sint Maarten (Dutch part)" },
-  { label: "Slovakia", value: "Slovakia" },
-  { label: "Slovenia", value: "Slovenia" },
-  { label: "Solomon Islands", value: "Solomon Islands" },
-  { label: "Somalia", value: "Somalia" },
-  { label: "South Africa", value: "South Africa" },
-  { label: "South Georgia and the South Sandwich Islands", value: "South Georgia and the South Sandwich Islands" },
-  { label: "South Sudan", value: "South Sudan" },
-  { label: "Spain", value: "Spain" },
-  { label: "Sri Lanka", value: "Sri Lanka" },
-  { label: "Sudan (the)", value: "Sudan (the)" },
-  { label: "Suriname", value: "Suriname" },
-  { label: "Svalbard and Jan Mayen", value: "Svalbard and Jan Mayen" },
-  { label: "Sweden", value: "Sweden" },
-  { label: "Switzerland", value: "Switzerland" },
-  { label: "Syrian Arab Republic", value: "Syrian Arab Republic" },
-  { label: "Taiwan (Province of China)", value: "Taiwan (Province of China)" },
-  { label: "Tajikistan", value: "Tajikistan" },
-  { label: "Tanzania, United Republic of", value: "Tanzania, United Republic of" },
-  { label: "Thailand", value: "Thailand" },
-  { label: "Timor-Leste", value: "Timor-Leste" },
-  { label: "Togo", value: "Togo" },
-  { label: "Tokelau", value: "Tokelau" },
-  { label: "Tonga", value: "Tonga" },
-  { label: "Trinidad and Tobago", value: "Trinidad and Tobago" },
-  { label: "Tunisia", value: "Tunisia" },
-  { label: "Turkey", value: "Turkey" },
-  { label: "Turkmenistan", value: "Turkmenistan" },
-  { label: "Turks and Caicos Islands (the)", value: "Turks and Caicos Islands (the)" },
-  { label: "Tuvalu", value: "Tuvalu" },
-  { label: "Uganda", value: "Uganda" },
-  { label: "Ukraine", value: "Ukraine" },
-  { label: "United Arab Emirates (the)", value: "United Arab Emirates (the)" },
-  { label: "United Kingdom of Great Britain and Northern Ireland (the)", value: "United Kingdom of Great Britain and Northern Ireland (the)" },
-  { label: "United States Minor Outlying Islands (the)", value: "United States Minor Outlying Islands (the)" },
-  { label: "United States of America (the)", value: "United States of America (the)" },
-  { label: "Uruguay", value: "Uruguay" },
-  { label: "Uzbekistan", value: "Uzbekistan" },
-  { label: "Vanuatu", value: "Vanuatu" },
-  { label: "Venezuela (Bolivarian Republic of)", value: "Venezuela (Bolivarian Republic of)" },
-  { label: "Viet Nam", value: "Viet Nam" },
-  { label: "Virgin Islands (British)", value: "Virgin Islands (British)" },
-  { label: "Virgin Islands (U.S.)", value: "Virgin Islands (U.S.)" },
-  { label: "Wallis and Futuna", value: "Wallis and Futuna" },
-  { label: "Western Sahara", value: "Western Sahara" },
-  { label: "Yemen", value: "Yemen" },
-  { label: "Zambia", value: "Zambia" },
-  { label: "Zimbabwe", value: "Zimbabwe" }
-]
-
 
 const checkIsValid = data => {
   return Object.values(data).every(field => (typeof field === 'object' ? field !== null : field.length > 0))
 }
 
-const SidebarNewUsers = ({ open, toggleSidebar }) => {
+const SidebarNewUsers = ({ open, toggleSidebar, employeeOptions }) => {
   // ** States
   const [data, setData] = useState(null)
-  const [dob, setDob] = useState(new Date())
+  const [rp_issue, set_rp_issue] = useState(new Date())
+  const [rp_expiry, set_rp_expiry] = useState(new Date())
 
   // ** Store Vars
   const dispatch = useDispatch()
@@ -318,19 +59,12 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     if (checkIsValid(data)) {
       toggleSidebar()
       dispatch(
-        addEmployee({
-          name: data.name,
-          dob: data.dob[0].toISOString(),
-          cpr: data.cpr,
-          nationality:  data.nationality.value,
-          passport: data.passport,
-          phone: data.phone,
-          address: data.address,
-          expatriate: data.expatriate,
-          contractSigned: data.contractSigned,
-          cr: data.branch.value,
-          salary: data.salary,
-          status: 'active'
+        addVisa({
+          rp_no: data.rp_no,
+          rp_issue: data.rp_issue[0].toISOString(),
+          rp_expiry: data.rp_expiry[0].toISOString(),
+          employee:  data.employee.value,
+          status: (moment(data.rp_expiry[0]).diff(data.rp_issue[0], 'days') > 0) ? 'valid' : 'invalid'
         })
       )
     } else {
@@ -364,177 +98,63 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     >
       <Form onSubmit={handleSubmit(onSubmit)}>
         <div className='mb-1'>
-          <Label className='form-label' for='fullName'>
-            Full Name <span className='text-danger'>*</span>
+          <Label className='form-label' for='employee'>
+            Employee <span className='text-danger'>*</span>
           </Label>
           <Controller
-            name='name'
-            control={control}
-            render={({ field }) => (
-              <Input id='name' placeholder='Enter employee name' invalid={errors.name && true} {...field} />
-            )}
-          />
-        </div>
-        <div className='mb-1'>
-          <Label className='form-label' for='dob'>
-            Date of Birth <span className='text-danger'>*</span>
-          </Label>
-          <Controller
-            name='dob'
-            control={control}
-            render={({ field }) => (
-              <Flatpickr className={classnames('form-control', { 'is-invalid': data !== null && data.dob === '' })} id='dob' {...field} />
-            )}
-          />
-        </div>
-        <div className='mb-1'>
-          <Label className='form-label' for='cpr'>
-            CPR No <span className='text-danger'>*</span>
-          </Label>
-          <Controller
-            name='cpr'
-            control={control}
-            render={({ field }) => (
-              <Input
-                type='text'
-                id='cpr'
-                placeholder='Enter employee CPR '
-                invalid={errors.cpr && true}
-                {...field}
-              />
-            )}
-          />
-        </div>
-
-        <div className='mb-1'>
-          <Label className='form-label' for='passport'>
-            Passport No <span className='text-danger'>*</span>
-          </Label>
-          <Controller
-            name='passport'
-            control={control}
-            render={({ field }) => (
-              <Input id='passport' placeholder='Enter employee passport number' invalid={errors.passport && true} {...field} />
-            )}
-          />
-        </div>
-        <div className='mb-1'>
-          <Label className='form-label' for='phone'>
-            Phone <span className='text-danger'>*</span>
-          </Label>
-          <Controller
-            name='phone'
-            control={control}
-            render={({ field }) => (
-              <Input id='phone' placeholder='Employee phone number' invalid={errors.phone && true} {...field} />
-            )}
-          />
-        </div>
-        <div className='mb-1'>
-          <Label className='form-label' for='branch'>
-            Branch <span className='text-danger'>*</span>
-          </Label>
-          <Controller
-            name='branch'
+            name='employee'
             control={control}
             render={({ field }) => (
               // <Input id='country' placeholder='Australia' invalid={errors.country && true} {...field} />
               <Select
                 isClearable={false}
                 classNamePrefix='select'
-                options={branchOptions}
+                options={employeeOptions}
                 theme={selectThemeColors}
-                className={classnames('react-select', { 'is-invalid': data !== null && data.branch === '' })}
+                className={classnames('react-select', { 'is-invalid': data !== null && data.employee === '' })}
                 {...field}
               />
             )}
           />
         </div>
         <div className='mb-1'>
-          <Label className='form-label' for='salary'>
-            Salary <span className='text-danger'>*</span>
+          <Label className='form-label' for='rp_no'>
+            RP No <span className='text-danger'>*</span>
           </Label>
           <Controller
-            name='salary'
+            name='rp_no'
             control={control}
             render={({ field }) => (
-              <Input
-                type='text'
-                id='salary'
-                placeholder='Salary '
-                invalid={errors.salary && true}
-                {...field}
-              />
+              <Input id='rp_no' placeholder='Enter RP Number' invalid={errors.rp_no && true} {...field} />
             )}
           />
         </div>
         <div className='mb-1'>
-          <Label className='form-label' for='nationality'>
-            Nationality <span className='text-danger'>*</span>
+          <Label className='form-label' for='rp_issue'>
+            RP Issue <span className='text-danger'>*</span>
           </Label>
           <Controller
-            name='nationality'
+            name='rp_issue'
             control={control}
             render={({ field }) => (
-              // <Input id='country' placeholder='Australia' invalid={errors.country && true} {...field} />
-              <Select
-                isClearable={false}
-                classNamePrefix='select'
-                options={countryOptions}
-                theme={selectThemeColors}
-                className={classnames('react-select', { 'is-invalid': data !== null && data.nationality === '' })}
-                {...field}
-              />
+              <Flatpickr className={classnames('form-control', { 'is-invalid': data !== null && data.rp_issue === '' })} id='rp_issue' {...field} />
             )}
           />
         </div>
         <div className='mb-1'>
-          <Label className='form-label' for='address'>
-            Address <span className='text-danger'>*</span>
+          <Label className='form-label' for='rp_expiry'>
+            RP Expiry <span className='text-danger'>*</span>
           </Label>
           <Controller
-            name='address'
+            name='rp_expiry'
             control={control}
             render={({ field }) => (
-              <Input id='address' type="textarea" placeholder='Employee Address' invalid={errors.address && true} {...field} />
+              <Flatpickr className={classnames('form-control', { 'is-invalid': data !== null && data.rp_expiry === '' })} id='rp_expiry' {...field} />
             )}
           />
+        </div>
+       
 
-        </div>
-        <div className='mb-1'>
-          <Label className='form-label' for='select-expatriate'>
-            Expatriate <span className='text-danger'>*</span>
-          </Label>
-          <Controller
-            name='expatriate'
-            control={control}
-            render={({ field }) => (
-              <Input type='select' id='expatriate' name='expatriate' invalid={errors.expatriate && true} {...field} >
-                <option value=''>Select...</option>
-                <option value='true'>True</option>
-                <option value='false'>False</option>
-              </Input>
-            )}
-          />
-
-        </div>
-        <div className='mb-1' >
-          <Label className='form-label' for='contractSigned'>
-            Contract Signed <span className='text-danger'>*</span>
-          </Label>
-          <Controller
-            name='contractSigned'
-            control={control}
-            render={({ field }) => (
-              <Input type='select' id='contractSigned' name='contractSigned' invalid={errors.contractSigned && true} {...field} >
-                <option value=''>Select...</option>
-                <option value='true'>True</option>
-                <option value='false'>False</option>
-              </Input>
-            )}
-          />
-        </div>
-        
         <Button type='submit' className='me-1' color='primary'>
           Submit
         </Button>
